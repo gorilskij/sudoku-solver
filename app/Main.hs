@@ -9,6 +9,7 @@ solvem'' i pss
     | otherwise          = solvem' i pss
 
 solvem' :: Int -> [(Sudoku, Sudoku)] -> IO ()
+solvem' _ [] = return ()
 solvem' i ((p, s):pss) = do
     let solved = solve p
     if isSolved solved
@@ -23,4 +24,4 @@ solvem = solvem' 0
 main :: IO ()
 main = do
     pairs <- pairsFromCSV "sudokus/sudoku.csv"
-    solvem pairs
+    solvem $ take 500 pairs

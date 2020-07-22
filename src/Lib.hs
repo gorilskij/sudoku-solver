@@ -165,129 +165,116 @@ disallow = squares2rows
 
 type Clique = ([Index], Allowed) -- (ids, values)
 
--- n cells with only the same n allowed values each
-cliques1 :: Sudoku -> [Clique]
-cliques1 = concatMap
-         $ map (\ias -> let (is, (a:_)) = unzip ias in
-                            (is, a))
-         . filter isClique1
-         . tail -- skip []
-         . subsequences
-         . mapMaybe unwrapEmpty
-    where isClique1 :: [(Index, Allowed)] -> Bool
-          isClique1 ias = let (is, (a:as)) = unzip ias in
-                              length is == length a
-                              && all (a ==) as
+-- then Just else Nothing
+(?>) :: Bool -> a -> Maybe a
+True  ?> a = Just a
+False ?> _ = Nothing
+
+tryIntoClique1 :: [(Index, Allowed)] -> Maybe Clique
+tryIntoClique1 ias = isClique1 ?> (is, a)
+    where (is, (a:as)) = unzip ias
+          isClique1 = length is == length a && all (a ==) as
+
+safeInit [] = []
+safeInit l  = init l
 
 -- same as Set.unions (error on empty list)
 intersections :: Ord a => [Set.Set a] -> Set.Set a
 intersections = foldl1 Set.intersection
 
--- n cells that are the only ones in the group with a certain n values allowed
-cliques2' :: Group -> [Clique]
-cliques2' g = mapMaybe tryIntoClique2
-            $ tail
-            $ subsequences
-            $ g'
-    where g' = mapMaybe unwrapEmpty g
-          tryIntoClique2 :: [(Index, Allowed)] -> Maybe Clique
-          tryIntoClique2 ias = let (is, as) = unzip ias;
-                                   sharedAs = intersections as;
-                                   otherCells = filter ( not
-                                                       . (`elem` is)
-                                                       . fst
-                                                       ) g'
-                                   otherAs = Set.unions $ map snd otherCells
-                                   uniqueAs = sharedAs Set.\\ otherAs
-                               in case length uniqueAs `compare` length is of
-                                      LT -> Nothing -- actually type 3 clique
-                                      EQ -> Just (is, uniqueAs)
-                                      GT -> error "invalid sudoku"
-                                      -- will likely error if disallow wasn't called beforehand
-                                    --   GT -> error $ "invalid sudoku, is = " ++ show is ++ ", uAs = " ++ show uniqueAs ++ ", oAs = " ++ show otherAs
-                                                --   ++ "\nsharedAs = " ++ show sharedAs
-                                                --   ++ "\nas = " ++ show as
+-- whole group -> subsequence -> ...
+tryIntoClique2 :: [(Index, Allowed)] -> [(Index, Allowed)] -> Maybe Clique
+tryIntoClique2 g ias = let (is, as) = unzip ias;
+                           sharedAs = intersections as;
+                           otherCells = filter ( not
+                                               . (`elem` is)
+                                               . fst
+                                               ) g
+                           otherAs = Set.unions $ map snd otherCells
+                           uniqueAs = sharedAs Set.\\ otherAs
+                       in case length uniqueAs `compare` length is of
+                              LT -> Nothing -- actually type 3 clique
+                              EQ -> Just (is, uniqueAs)
+                              GT -> error "invalid sudoku"
+                              -- will likely error if disallow wasn't called beforehand
+                            --   GT -> error $ "invalid sudoku, is = " ++ show is ++ ", uAs = " ++ show uniqueAs ++ ", oAs = " ++ show otherAs
+                                        --   ++ "\nsharedAs = " ++ show sharedAs
+                                        --   ++ "\nas = " ++ show as
 
-cliques2 :: Sudoku -> [Clique]
-cliques2 = concatMap cliques2'
+-- whole group -> subsequence -> ...
+tryIntoClique3 :: [(Index, Allowed)] -> [(Index, Allowed)] -> Maybe Clique
+tryIntoClique3 g ias = let (is, as) = unzip ias;
+                           sharedAs = intersections as;
+                           otherCells = filter ( not
+                                               . (`elem` is)
+                                               . fst
+                                               ) g
+                           otherAs = Set.unions $ map snd otherCells
+                           uniqueAs = sharedAs Set.\\ otherAs
+                       in case length uniqueAs `compare` length is of
+                              LT -> if length uniqueAs == 0
+                                        then Nothing -- a lot of these
+                                        else Just (is, uniqueAs)
+                              EQ -> Nothing -- type 2 clique
+                              GT -> error "invalid sudoku"
 
--- same as type 2 cliques but fewer values than cells
-cliques3' :: Group -> [Clique]
-cliques3' g = mapMaybe tryIntoClique3
-            $ tail
-            $ subsequences
-            $ g'
-    where g' = mapMaybe unwrapEmpty g
-          tryIntoClique3 :: [(Index, Allowed)] -> Maybe Clique
-          tryIntoClique3 ias = let (is, as) = unzip ias;
-                                   sharedAs = intersections as;
-                                   otherCells = filter ( not
-                                                       . (`elem` is)
-                                                       . fst
-                                                       ) g'
-                                   otherAs = Set.unions $ map snd otherCells
-                                   uniqueAs = sharedAs Set.\\ otherAs
-                               in case length uniqueAs `compare` length is of
-                                      LT -> if length uniqueAs == 0
-                                                then Nothing -- a lot of these
-                                                else Just (is, uniqueAs)
-                                      EQ -> Nothing -- type 2 clique
-                                      GT -> error "invalid sudoku"
+type Cliques123 = ([Clique], [Clique], [Clique])
 
-cliques3 :: Sudoku -> [Clique]
-cliques3 = concatMap cliques3'
+cliques' :: Group -> Cliques123
+cliques' g = ( mapMaybe tryIntoClique1 subSeqs
+             , mapMaybe (tryIntoClique2 g') subSeqs
+             , mapMaybe (tryIntoClique3 g') subSeqs
+             )
+    where subSeqs = safeInit
+                  $ tail
+                  $ subsequences
+                  $ g'
+          g' = mapMaybe unwrapEmpty g
 
--- ... -> (type1, type2, type3)
-cliques :: Sudoku -> ([Clique], [Clique], [Clique])
-cliques s = cccliques s
-          +++ cccliques (rows2cols s)
-          +++ cccliques (rows2squares s)
-    where cccliques = liftM3 (,,) cliques1 cliques2 cliques3
-          (+++) (l1, l2, l3) (l1', l2', l3') = (l1 ++ l1', l2 ++ l2', l3 ++ l3')
+cliques :: Sudoku -> Cliques123
+cliques = foldl1 (+++)
+        . map cliques'
+    where (a, b, c) +++ (d, e, f) = (a ++ d, b ++ e, c ++ f)
 
+-- this function takes up 40% of execution time and 50% of allocation space
 -- check if group contains clique
 contains :: Group -> Clique -> Bool
-contains g (is, _) = Set.fromList is `Set.isSubsetOf` Set.fromList (map fst g)
+-- contains g (is, _) = Set.fromList is `Set.isSubsetOf` Set.fromList (map fst g)
+contains g (is, _) = is `isSubsequenceOf` sort (map fst g)
 
 applyAll :: [a -> a] -> a -> a
 applyAll [] x     = x
 applyAll (f:fs) x = applyAll fs (f x)
 
 -- disallow clique values from all other group members
-disallowCliques1' :: Clique -> Group -> Group
-disallowCliques1' c1@(is, vs) g = if g `contains` c1
-                                      then map removeVsIfOther g
-                                      else g
+-- assumes (g `contains` c1)
+disallowClique1' :: Clique -> Group -> Group
+disallowClique1' c1@(is, vs) g = map removeVsIfOther g
     where removeVsIfOther (i, Empty as)
               | not $ i `elem` is = (i, Empty (as Set.\\ vs))
           removeVsIfOther c = c
 
-disallowCliques1 :: [Clique] -> Sudoku -> Sudoku
-disallowCliques1 c1s = map (applyAll $ map disallowCliques1' c1s)
-
 -- disallow all non-clique values from clique members
-disallowCliques2' :: Clique -> Group -> Group
-disallowCliques2' c2@(is, vs) g = if g `contains` c2
-                                      then map removeAsIfMember g
-                                      else g
+-- assumes (g `contains` c2)
+disallowClique2' :: Clique -> Group -> Group
+disallowClique2' c2@(is, vs) g = map removeAsIfMember g
     where removeAsIfMember (i, Empty as)
               | i `elem` is = (i, Empty vs)
           removeAsIfMember c = c
 
-disallowCliques2 :: [Clique] -> Sudoku -> Sudoku
-disallowCliques2 c2s = map (applyAll $ map disallowCliques2' c2s)
+disallowCliques'' :: ([Clique], [Clique], [Clique]) -> Group -> Group
+disallowCliques'' (c1s, c2s, c3s) g = applyAll ( map disallowClique1' c1s'
+                                               ++ map disallowClique1' c2s'
+                                               ++ map disallowClique1' c3s'
+                                               ++ map disallowClique2' c2s'
+                                               ) g
+    where flt = filter (g `contains`)
+          c1s' = flt c1s
+          c2s' = flt c2s
+          c3s' = flt c3s
 
 disallowCliques' :: ([Clique], [Clique], [Clique]) -> Sudoku -> Sudoku
-disallowCliques' (c1s, c2s, c3s) = disallowCliques1 c1s
-                                 . disallowCliques2 c2s
-                                 -- disallow cliques values from all other group
-                                 -- members, this is redundant for the clique's
-                                 -- original group but helps with other groups
-                                 -- (a type 2 clique is also a type 1 clique)
-                                 . disallowCliques1 c2s
-                                 -- a type 3 clique is also (kind of) a type 1 clique
-                                 -- they both work for the purposes of this method
-                                 . disallowCliques1 c3s
+disallowCliques' = map . disallowCliques''
 
 disallowCliques :: Sudoku -> Sudoku
 disallowCliques s = sub -- on rows
