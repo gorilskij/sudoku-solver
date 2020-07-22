@@ -22,8 +22,13 @@ data Cell = Full Value
           | Empty Allowed
           deriving Eq
 
+data GroupId = Row Int
+             | Col Int
+             | Square Int
+             deriving (Eq, Show)
+
 type ICell = (Index, Cell) -- indexed cell
-type Group = [ICell]
+type Group = (GroupId, [ICell])
 type Sudoku = [Group]
 
 showCell' :: ICell -> String
@@ -39,6 +44,7 @@ showGroup' = intercalate " | "
            . map (intercalate " ")
            . chunksOf 3
            . map showCell'
+           . snd
 
 -- debug show
 showSudoku' :: Sudoku -> String
@@ -59,6 +65,7 @@ showGroup = intercalate " | "
           . map (intercalate " ")
           . chunksOf 3
           . map showCell
+          . snd
 
 -- pretty show
 showSudoku :: Sudoku -> String
@@ -72,8 +79,8 @@ showSudoku = intercalate ("\n"
 
 -- from dense 9x9 representation where spaces are empty cells
 fromString :: String -> Sudoku
-fromString s = map (\(s, g) -> zip [s..] g)
-             $ zip [0,9..]
+fromString s = map (\(i, g) -> (Row i, zip [i * 9 ..] g))
+             $ zip [0..]
              $ map (map readCell . rPad9 ' ')
              $ rPad9 ""
              $ lines s
@@ -108,7 +115,7 @@ isFull _           = False
 isEmpty = not . isFull
 
 isSolved :: Sudoku -> Bool
-isSolved = all $ all isFull
+isSolved = all (all isFull . snd)
 
 unwrapFull :: ICell -> Maybe (Index, Value)
 unwrapFull (i, Full n) = Just (i, n)
@@ -122,31 +129,52 @@ mapEmpty :: (Allowed -> Allowed) -> ICell -> ICell
 mapEmpty g (i, Empty as) = (i, Empty (g as))
 mapEmpty _ f             = f
 
+toGroups :: (Int -> GroupId) -> [[ICell]] -> Sudoku
+toGroups = toGroups' 0
+    where toGroups' i f (g:gs) = (f i, g) : toGroups' (i + 1) f gs
+          toGroups' _ _ []     = []
+
+fromGroups :: Sudoku -> [[ICell]]
+fromGroups = map snd
+
 -- the default representation of Sudoku is rows
 rows2cols :: Sudoku -> Sudoku
-rows2cols = transpose
+rows2cols = toGroups Col
+          . transpose
+          . fromGroups
 
 cols2rows :: Sudoku -> Sudoku
-cols2rows = transpose
+cols2rows = toGroups Row
+          . transpose
+          . fromGroups
 
 rows2squares :: Sudoku -> Sudoku
-rows2squares = concatMap ( map (concat . transpose)
+rows2squares = toGroups Square
+             . concatMap ( map (concat . transpose)
                          . chunksOf 3
                          . transpose
                          )
              . chunksOf 3
+             . fromGroups
 
 squares2rows :: Sudoku -> Sudoku
-squares2rows = concatMap ( map concat
+squares2rows = toGroups Row
+             . concatMap ( map concat
                          . transpose
                          . map (chunksOf 3)
                          )
              . chunksOf 3
+             . fromGroups
+
+mapSnd :: (b -> c) -> (a, b) -> (a, c)
+mapSnd f (x, y) = (x, f y)
 
 disallow' :: Group -> Group
-disallow' g = map (mapEmpty (\\\ disallowed)) g
-    where disallowed :: Allowed
-          disallowed = fromList $ map snd $ mapMaybe unwrapFull g
+disallow' g = mapSnd (map (mapEmpty (\\\ disallowed))) g
+    where disallowed = fromList
+                     $ map snd
+                     $ mapMaybe unwrapFull
+                     $ snd g
 
 disallow :: Sudoku -> Sudoku
 disallow = squares2rows
@@ -159,40 +187,103 @@ disallow = squares2rows
 
 data CliqueType = Type1 | Type2 | Type3 deriving (Show, Eq)
 type CliqueData = ([Index], Allowed) -- (ids, values)
-data Clique = Clique CliqueType CliqueData deriving Show
+data Clique = Clique { cliqueType :: CliqueType
+                     , creationGroup :: GroupId
+                     , containingGroups :: [GroupId]
+                     , cliqueData :: CliqueData
+                     } deriving Show
 
 safeInit [] = []
 safeInit l  = init l
 
--- whole group -> subsequence -> ...
-tryIntoClique :: [(Index, Allowed)] -> [(Index, Allowed)] -> Maybe Clique
-tryIntoClique g ias = let (is, as) = unzip ias
-                          
-                          (a':as') = as
-                          isClique1 = length is == len a' && all (a' ==) as'
+rowIndices = [ (Row 0, [00..08])
+             , (Row 1, [09..17])
+             , (Row 2, [18..26])
+             , (Row 3, [27..35])
+             , (Row 4, [36..44])
+             , (Row 5, [45..53])
+             , (Row 6, [54..62])
+             , (Row 7, [63..71])
+             , (Row 8, [72..80])
+             ]
 
-                          sharedAs = intersections as
-                          otherCells = filter ( not
-                                              . (`elem` is)
-                                              . fst
-                                              ) g
-                          otherAs = unions $ map snd otherCells
-                          uniqueAs = sharedAs \\\ otherAs
-                      in if isClique1
-                             then Just $ Clique Type1 (is, a')
-                             else case len uniqueAs `compare` length is of
-                                      LT -> if len uniqueAs == 0
-                                                then Nothing -- a lot of these
-                                                else Just $ Clique Type3 (is, uniqueAs)
-                                      EQ -> Just $ Clique Type2 (is, uniqueAs)
-                                      GT -> error "invalid sudoku"
+colIndices = [ (Col 0, [0,09..72])
+             , (Col 1, [1,10..73])
+             , (Col 2, [2,11..74])
+             , (Col 3, [3,12..75])
+             , (Col 4, [4,13..76])
+             , (Col 5, [5,14..77])
+             , (Col 6, [6,15..78])
+             , (Col 7, [7,16..79])
+             , (Col 8, [8,17..80])
+             ]
+
+squareIndices = [ (Square 0, [00,01,02, 09,10,11, 18,19,20])
+                , (Square 1, [03,04,05, 12,13,14, 21,22,23])
+                , (Square 2, [06,07,08, 15,16,17, 24,25,26])
+
+                , (Square 3, [27,28,29, 36,37,38, 45,46,47])
+                , (Square 4, [30,31,32, 39,40,41, 48,49,50])
+                , (Square 5, [33,34,35, 42,43,44, 51,52,53])
+
+                , (Square 6, [54,55,56, 63,64,65, 72,73,74])
+                , (Square 7, [57,58,59, 66,67,68, 75,76,77])
+                , (Square 8, [60,61,62, 69,70,71, 78,79,80])
+                ]
+
+allEqual :: Eq a => [a] -> Bool
+allEqual (a:a':as)
+    | a == a'   = allEqual $ a' : as
+    | otherwise = False
+allEqual as     = True
+
+getContainingGroups :: [Index] -> [GroupId]
+getContainingGroups is = row ++ col ++ square
+    where isRow = allEqual $ map (`div` 9) is
+          isCol = allEqual $ map (`mod` 9) is
+          isSquare = True -- unimplemented
+
+          find = map fst . take 1 . filter ((is `isSubsequenceOf`) . snd)
+          row = if isRow
+                    then find rowIndices
+                    else []
+          col = if isCol
+                    then find colIndices
+                    else []
+          square = if isSquare
+                       then find squareIndices
+                       else []
+
+-- _ -> whole group -> subsequence -> ...
+tryIntoClique :: GroupId -> [(Index, Allowed)] -> [(Index, Allowed)] -> Maybe Clique
+tryIntoClique gId g ias = let (is, as) = unzip ias
+                              cGs = delete gId $ getContainingGroups is
+                          
+                              (a':as') = as
+                              isClique1 = length is == len a' && all (a' ==) as'
+
+                              sharedAs = intersections as
+                              otherCells = filter ( not
+                                                  . (`elem` is)
+                                                  . fst
+                                                  ) g
+                              otherAs = unions $ map snd otherCells
+                              uniqueAs = sharedAs \\\ otherAs
+                          in if isClique1
+                                 then Just $ Clique Type1 gId cGs (is, a')
+                                 else case len uniqueAs `compare` length is of
+                                          LT -> if len uniqueAs == 0
+                                                    then Nothing -- a lot of these
+                                                    else Just $ Clique Type3 gId cGs (is, uniqueAs)
+                                          EQ -> Just $ Clique Type2 gId cGs (is, uniqueAs)
+                                          GT -> error $ "invalid sudoku, uniqueAs = " ++ show uniqueAs ++ ", is = " ++ show is ++ ", gId = " ++ show gId
 
 cliques' :: Group -> [Clique]
-cliques' g = mapMaybe (tryIntoClique g')
-         $ safeInit
-         $ tail
-         $ subsequences
-         $ g'
+cliques' (gId, g) = mapMaybe (tryIntoClique gId g')
+                  $ safeInit
+                  $ tail
+                  $ subsequences
+                  $ g'
     where g' = mapMaybe unwrapEmpty g
 
 cliques :: Sudoku -> [Clique]
@@ -206,7 +297,11 @@ cliques s -- maybe nub here somehow
 -- this function takes up 40% of execution time and 50% of allocation space
 -- check if group contains clique
 contains :: Group -> Clique -> Bool
-contains g (Clique _ (is, _)) = is `isSubsequenceOf` (map fst g)
+contains (gId, _) Clique{ creationGroup=cId
+                        , containingGroups=containingGroups
+                        }
+    = gId == cId
+    || gId `elem` containingGroups
 -- contains g (Clique _ (is, _)) = fromNubList is `isSubSetOf` fromList (map fst g)
 
 applyAll :: [a -> a] -> a -> a
@@ -215,7 +310,7 @@ applyAll (f:fs) x = applyAll fs (f x)
 
 -- disallow clique values from all other group members
 -- assumes (g `contains` c1)
-disallowCliqueA :: CliqueData -> Group -> Group
+disallowCliqueA :: CliqueData -> [ICell] -> [ICell]
 disallowCliqueA (is, vs) g = map removeVsIfOther g
     where removeVsIfOther (i, Empty as)
               | not $ i `elem` is = (i, Empty (as \\\ vs))
@@ -223,17 +318,25 @@ disallowCliqueA (is, vs) g = map removeVsIfOther g
 
 -- disallow all non-clique values from clique members
 -- assumes (g `contains` c2)
-disallowCliqueB :: CliqueData -> Group -> Group
+disallowCliqueB :: CliqueData -> [ICell] -> [ICell]
 disallowCliqueB (is, vs) g = map removeAsIfMember g
     where removeAsIfMember (i, Empty as)
               | i `elem` is = (i, Empty vs)
           removeAsIfMember c = c
 
+
+-- do we need disallow at all?
 disallowClique' :: Clique -> Group -> Group
-disallowClique' c@(Clique Type1 cd) = disallowCliqueA cd
-disallowClique' c@(Clique Type2 cd) = disallowCliqueA cd
-                                    . disallowCliqueB cd
-disallowClique' c@(Clique Type3 cd) = disallowCliqueA cd
+disallowClique' Clique{cliqueType=Type1, cliqueData=cd} (gId, g) = (gId, disallowCliqueA cd g)
+
+disallowClique' Clique{cliqueType=Type2, creationGroup=cId, cliqueData=cd} gr@(gId, g)
+    | cId == gId = (gId, disallowCliqueB cd g)
+    | otherwise  = (gId, disallowCliqueA cd $ disallowCliqueB cd g)
+
+disallowClique' Clique{cliqueType=Type3, creationGroup=cId, cliqueData=cd} gr@(gId, g)
+    | cId == gId = gr
+    | otherwise  = (gId, disallowCliqueA cd g)
+
 
 disallowCliques' :: [Clique] -> Group -> Group
 disallowCliques' cs g = applyAll (map disallowClique' myCs) g
@@ -255,8 +358,9 @@ disallowCliques s = if length cs == 0
 
 -- convert empty cell with one allowed value into full cells
 onlyChoice :: Sudoku -> Sudoku
-onlyChoice = map (map onlyChoice')
-    where onlyChoice' (i, Empty as)
+onlyChoice = map $ mapSnd $ map onlyChoice'
+    where onlyChoice' :: ICell -> ICell
+          onlyChoice' (i, Empty as)
               | len as == 1 = (i, Full $ head $ toList as)
           onlyChoice' c     = c
 
