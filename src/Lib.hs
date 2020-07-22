@@ -182,54 +182,36 @@ safeInit l  = init l
 intersections :: Ord a => [Set.Set a] -> Set.Set a
 intersections = foldl1 Set.intersection
 
--- whole group -> subsequence -> ...
-tryIntoClique2 :: [(Index, Allowed)] -> [(Index, Allowed)] -> Maybe Clique
-tryIntoClique2 g ias = let (is, as) = unzip ias;
-                           sharedAs = intersections as;
-                           otherCells = filter ( not
-                                               . (`elem` is)
-                                               . fst
-                                               ) g
-                           otherAs = Set.unions $ map snd otherCells
-                           uniqueAs = sharedAs Set.\\ otherAs
-                       in case length uniqueAs `compare` length is of
-                              LT -> Nothing -- actually type 3 clique
-                              EQ -> Just (is, uniqueAs)
-                              GT -> error "invalid sudoku"
-                              -- will likely error if disallow wasn't called beforehand
-                            --   GT -> error $ "invalid sudoku, is = " ++ show is ++ ", uAs = " ++ show uniqueAs ++ ", oAs = " ++ show otherAs
-                                        --   ++ "\nsharedAs = " ++ show sharedAs
-                                        --   ++ "\nas = " ++ show as
-
--- whole group -> subsequence -> ...
-tryIntoClique3 :: [(Index, Allowed)] -> [(Index, Allowed)] -> Maybe Clique
-tryIntoClique3 g ias = let (is, as) = unzip ias;
-                           sharedAs = intersections as;
-                           otherCells = filter ( not
-                                               . (`elem` is)
-                                               . fst
-                                               ) g
-                           otherAs = Set.unions $ map snd otherCells
-                           uniqueAs = sharedAs Set.\\ otherAs
-                       in case length uniqueAs `compare` length is of
-                              LT -> if length uniqueAs == 0
-                                        then Nothing -- a lot of these
-                                        else Just (is, uniqueAs)
-                              EQ -> Nothing -- type 2 clique
-                              GT -> error "invalid sudoku"
+-- whole group -> subsequence -> (maybe clique1, maybe clique2)
+tryIntoClique23 :: [(Index, Allowed)] -> [(Index, Allowed)] -> (Maybe Clique, Maybe Clique)
+tryIntoClique23 g ias = let (is, as) = unzip ias;
+                            sharedAs = intersections as;
+                            otherCells = filter ( not
+                                                . (`elem` is)
+                                                . fst
+                                                ) g
+                            otherAs = Set.unions $ map snd otherCells
+                            uniqueAs = sharedAs Set.\\ otherAs
+                        in case length uniqueAs `compare` length is of
+                               LT -> if length uniqueAs == 0
+                                         then (Nothing, Nothing) -- a lot of these
+                                         else (Nothing, Just (is, uniqueAs))
+                               EQ -> (Just (is, uniqueAs), Nothing)
+                               GT -> error "invalid sudoku"
 
 type Cliques123 = ([Clique], [Clique], [Clique])
 
 cliques' :: Group -> Cliques123
 cliques' g = ( mapMaybe tryIntoClique1 subSeqs
-             , mapMaybe (tryIntoClique2 g') subSeqs
-             , mapMaybe (tryIntoClique3 g') subSeqs
+             , catMaybes maybe2s
+             , catMaybes maybe3s
              )
-    where subSeqs = safeInit
+    where g' = mapMaybe unwrapEmpty g
+          subSeqs = safeInit
                   $ tail
                   $ subsequences
                   $ g'
-          g' = mapMaybe unwrapEmpty g
+          (maybe2s, maybe3s) = unzip $ map (tryIntoClique23 g') subSeqs
 
 cliques :: Sudoku -> Cliques123
 cliques = foldl1 (+++)
