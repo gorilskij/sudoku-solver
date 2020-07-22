@@ -5,7 +5,7 @@
 --        ) where
 module Lib where
 
-import qualified Data.Set as Set
+import BitSet9
 import Data.Maybe
 import Data.List
 import Data.List.Split
@@ -16,7 +16,7 @@ import Debug.Trace
 
 type Value = Int
 type Index = Int
-type Allowed = Set.Set Value
+type Allowed = BitSet9
 
 data Cell = Full Value
           | Empty Allowed
@@ -29,7 +29,7 @@ type Sudoku = [Group]
 showCell' :: ICell -> String
 showCell' (_, Full n)   = "%    " ++ show n ++ "    %"
 showCell' (i, Empty as) = "["
-                        ++ map (\n -> if n `Set.member` as
+                        ++ map (\n -> if n `member` as
                                           then head $ show n
                                           else ' ') [1..9]
                         ++ "]"
@@ -78,7 +78,7 @@ fromString s = map (\(s, g) -> zip [s..] g)
              $ rPad9 ""
              $ lines s
     where rPad9 x = take 9 . (++ (repeat x))
-          readCell ' ' = Empty $ Set.fromList [1..9]
+          readCell ' ' = Empty full
           readCell c = Full $ read [c]
 
 fromFile :: FilePath -> IO Sudoku
@@ -144,13 +144,9 @@ squares2rows = concatMap ( map concat
              . chunksOf 3
 
 disallow' :: Group -> Group
-disallow' g = map (mapEmpty (Set.\\ disallowed)) g
+disallow' g = map (mapEmpty (\\\ disallowed)) g
     where disallowed :: Allowed
-          disallowed = foldl (flip Set.insert)
-                             Set.empty
-                             ( map snd
-                             $ mapMaybe unwrapFull g
-                             )
+          disallowed = fromList $ map snd $ mapMaybe unwrapFull g
 
 disallow :: Sudoku -> Sudoku
 disallow = squares2rows
@@ -168,28 +164,24 @@ data Clique = Clique CliqueType CliqueData deriving Show
 safeInit [] = []
 safeInit l  = init l
 
--- same as Set.unions (error on empty list)
-intersections :: Ord a => [Set.Set a] -> Set.Set a
-intersections = foldl1 Set.intersection
-
 -- whole group -> subsequence -> ...
 tryIntoClique :: [(Index, Allowed)] -> [(Index, Allowed)] -> Maybe Clique
 tryIntoClique g ias = let (is, as) = unzip ias
                           
                           (a':as') = as
-                          isClique1 = length is == length a' && all (a' ==) as'
+                          isClique1 = length is == len a' && all (a' ==) as'
 
                           sharedAs = intersections as
                           otherCells = filter ( not
                                               . (`elem` is)
                                               . fst
                                               ) g
-                          otherAs = Set.unions $ map snd otherCells
-                          uniqueAs = sharedAs Set.\\ otherAs
+                          otherAs = unions $ map snd otherCells
+                          uniqueAs = sharedAs \\\ otherAs
                       in if isClique1
                              then Just $ Clique Type1 (is, a')
-                             else case length uniqueAs `compare` length is of
-                                      LT -> if length uniqueAs == 0
+                             else case len uniqueAs `compare` length is of
+                                      LT -> if len uniqueAs == 0
                                                 then Nothing -- a lot of these
                                                 else Just $ Clique Type3 (is, uniqueAs)
                                       EQ -> Just $ Clique Type2 (is, uniqueAs)
@@ -215,6 +207,7 @@ cliques s -- maybe nub here somehow
 -- check if group contains clique
 contains :: Group -> Clique -> Bool
 contains g (Clique _ (is, _)) = is `isSubsequenceOf` (map fst g)
+-- contains g (Clique _ (is, _)) = fromNubList is `isSubSetOf` fromList (map fst g)
 
 applyAll :: [a -> a] -> a -> a
 applyAll [] x     = x
@@ -225,7 +218,7 @@ applyAll (f:fs) x = applyAll fs (f x)
 disallowCliqueA :: CliqueData -> Group -> Group
 disallowCliqueA (is, vs) g = map removeVsIfOther g
     where removeVsIfOther (i, Empty as)
-              | not $ i `elem` is = (i, Empty (as Set.\\ vs))
+              | not $ i `elem` is = (i, Empty (as \\\ vs))
           removeVsIfOther c = c
 
 -- disallow all non-clique values from clique members
@@ -264,8 +257,8 @@ disallowCliques s = if length cs == 0
 onlyChoice :: Sudoku -> Sudoku
 onlyChoice = map (map onlyChoice')
     where onlyChoice' (i, Empty as)
-              | length as == 1 = (i, Full $ head $ Set.toList as)
-          onlyChoice' c = c
+              | len as == 1 = (i, Full $ head $ toList as)
+          onlyChoice' c     = c
 
 
 solvingRound :: Sudoku -> Sudoku

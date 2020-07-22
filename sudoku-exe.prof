@@ -1,266 +1,304 @@
-	Wed Jul 22 17:23 2020 Time and Allocation Profiling Report  (Final)
+	Wed Jul 22 18:44 2020 Time and Allocation Profiling Report  (Final)
 
 	   sudoku-exe +RTS -N -p -RTS
 
-	total time  =        1.10 secs   (3755 ticks @ 1000 us, 12 processors)
-	total alloc = 7,620,894,552 bytes  (excludes profiling overheads)
+	total time  =        1.14 secs   (3900 ticks @ 1000 us, 12 processors)
+	total alloc = 7,634,598,608 bytes  (excludes profiling overheads)
 
-COST CENTRE                     MODULE    SRC                           %time %alloc
+COST CENTRE                     MODULE    SRC                             %time %alloc
 
-contains                        Lib       src/Lib.hs:220:1-64            42.6   50.2
-tryIntoClique.otherAs           Lib       src/Lib.hs:187:27-67            9.0    6.7
-intersections                   Lib       src/Lib.hs:173:1-39             8.3    3.2
-tryIntoClique.otherCells        Lib       src/Lib.hs:(183,27)-(186,49)    5.2    2.5
-fromString.readCell             Lib       src/Lib.hs:(81,11)-(82,38)      4.5    5.3
-tryIntoClique                   Lib       src/Lib.hs:(177,1)-(196,66)     4.1    0.7
-tryIntoClique.(...)             Lib       src/Lib.hs:177:27-46            3.6    8.1
-disallowCliqueA.removeVsIfOther Lib       src/Lib.hs:(230,11)-(232,31)    2.6    1.7
-disallowCliques'.myCs           Lib       src/Lib.hs:250:11-41            2.1    0.3
-tryIntoClique.uniqueAs          Lib       src/Lib.hs:188:27-60            1.6    0.6
-rows2squares                    Lib       src/Lib.hs:(133,1)-(137,25)     1.6    2.5
-disallowCliqueA                 Lib       src/Lib.hs:(229,1)-(232,31)     1.5    3.8
-cliques'                        Lib       src/Lib.hs:(199,1)-(204,37)     1.3    2.0
-mapEmpty                        Lib       src/Lib.hs:(122,1)-(123,28)     1.1    0.9
-disallow'.disallowed            Lib       src/Lib.hs:(149,11)-(153,30)    1.1    0.8
-disallowCliqueB                 Lib       src/Lib.hs:(237,1)-(240,32)     0.4    1.1
+contains                        Lib       src/Lib.hs:209:1-64              40.5   50.1
+tryIntoClique.otherCells        Lib       src/Lib.hs:(175,27)-(178,49)     14.8    5.7
+tryIntoClique                   Lib       src/Lib.hs:(169,1)-(188,66)       5.8    1.3
+tryIntoClique.(...)             Lib       src/Lib.hs:169:27-46              3.5    8.1
+fromString.readCell             Lib       src/Lib.hs:(81,11)-(82,38)        3.5    5.3
+tryIntoClique.otherAs           Lib       src/Lib.hs:179:27-63              2.9    4.9
+len.len'                        BitSet9   src/BitSet9.hs:(39,11)-(42,51)    2.7    0.0
+disallowCliqueA.removeVsIfOther Lib       src/Lib.hs:(220,11)-(222,31)      2.0    1.2
+disallowCliques'.myCs           Lib       src/Lib.hs:240:11-41              2.0    0.3
+unions                          BitSet9   src/BitSet9.hs:90:1-25            1.9    2.1
+cliques'                        Lib       src/Lib.hs:(191,1)-(196,37)       1.6    2.0
+rows2squares                    Lib       src/Lib.hs:(133,1)-(137,25)       1.5    2.5
+\/                              BitSet9   src/BitSet9.hs:82:1-50            1.3    0.8
+disallowCliqueA                 Lib       src/Lib.hs:(219,1)-(222,31)       1.3    3.8
+\\\                             BitSet9   src/BitSet9.hs:97:1-61            1.1    0.2
+disallowCliqueB                 Lib       src/Lib.hs:(227,1)-(230,32)       0.4    1.1
 
 
                                                                                                                                               individual      inherited
 COST CENTRE                                    MODULE                    SRC                                               no.     entries  %time %alloc   %time %alloc
 
-MAIN                                           MAIN                      <built-in>                                        246          0    0.0    0.0   100.0  100.0
- CAF                                           Debug.Trace               <entire-module>                                   358          0    0.0    0.0     0.0    0.0
- CAF                                           GHC.Conc.Signal           <entire-module>                                   346          0    0.0    0.0     0.0    0.0
- CAF                                           GHC.IO.Encoding           <entire-module>                                   327          0    0.0    0.0     0.0    0.0
- CAF                                           GHC.IO.Encoding.Iconv     <entire-module>                                   325          0    0.0    0.0     0.0    0.0
- CAF                                           GHC.IO.FD                 <entire-module>                                   318          0    0.0    0.0     0.0    0.0
- CAF                                           GHC.IO.Handle.FD          <entire-module>                                   316          0    0.0    0.0     0.0    0.0
- CAF                                           Text.Read.Lex             <entire-module>                                   278          0    0.0    0.0     0.0    0.0
- CAF                                           GHC.Event.Poll            <entire-module>                                   264          0    0.0    0.0     0.0    0.0
- CAF                                           GHC.Event.Thread          <entire-module>                                   263          0    0.0    0.0     0.0    0.0
- CAF:cliques_sCs                               Lib                       src/Lib.hs:209:11-13                              438          0    0.0    0.0     0.0    0.0
-  cliques                                      Lib                       src/Lib.hs:(207,1)-(212,41)                       611          0    0.0    0.0     0.0    0.0
-   cliques.sCs                                 Lib                       src/Lib.hs:209:11-42                              612          1    0.0    0.0     0.0    0.0
- CAF:cols2rows                                 Lib                       src/Lib.hs:130:1-9                                431          0    0.0    0.0     0.0    0.0
-  cols2rows                                    Lib                       src/Lib.hs:130:1-21                               626          1    0.0    0.0     0.0    0.0
- CAF:defaultSplitter                           Data.List.Split.Internals src/Data/List/Split/Internals.hs:58:1-15          392          0    0.0    0.0     0.0    0.0
-  defaultSplitter                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(58,1)-(63,28)   511          1    0.0    0.0     0.0    0.0
- CAF:disallow                                  Lib                       src/Lib.hs:156:1-8                                444          0    0.0    0.0     0.0    0.0
-  disallow                                     Lib                       src/Lib.hs:(156,1)-(162,24)                       614          1    0.0    0.0     0.0    0.0
- CAF:fromString1                               Lib                       <no location info>                                450          0    0.0    0.0     0.0    0.0
-  fromString                                   Lib                       src/Lib.hs:(75,1)-(82,38)                         592          0    0.0    0.0     0.0    0.0
-   fromString.rPad9                            Lib                       src/Lib.hs:80:11-44                               593          1    0.0    0.0     0.0    0.0
- CAF:fromString10                              Lib                       <no location info>                                449          0    0.0    0.0     0.0    0.0
-  fromString.readCell                          Lib                       src/Lib.hs:(81,11)-(82,38)                        652          0    0.0    0.0     0.0    0.0
- CAF:fromString11                              Lib                       <no location info>                                423          0    0.0    0.0     0.0    0.0
-  fromString                                   Lib                       src/Lib.hs:(75,1)-(82,38)                         591          0    0.0    0.0     0.0    0.0
- CAF:fromString7                               Lib                       <no location info>                                446          0    0.0    0.0     0.0    0.0
-  fromString                                   Lib                       src/Lib.hs:(75,1)-(82,38)                         648          0    0.0    0.0     0.0    0.0
-   fromString.readCell                         Lib                       src/Lib.hs:(81,11)-(82,38)                        649          0    0.0    0.0     0.0    0.0
- CAF:fromString_g                              Lib                       <no location info>                                424          0    0.0    0.0     0.0    0.0
-  fromString                                   Lib                       src/Lib.hs:(75,1)-(82,38)                         630          0    0.0    0.0     0.0    0.0
-   fromString.rPad9                            Lib                       src/Lib.hs:80:11-44                               631          1    0.0    0.0     0.0    0.0
- CAF:isSolved1                                 Lib                       <no location info>                                408          0    0.0    0.0     0.0    0.0
-  isSolved                                     Lib                       src/Lib.hs:111:1-27                               690          1    0.0    0.0     0.0    0.0
- CAF:main1                                     Main                      <no location info>                                490          0    0.0    0.0     0.0    0.0
-  main                                         Main                      app/Main.hs:(25,1)-(27,28)                        492          1    0.0    0.0     0.0    0.0
- CAF:main2                                     Main                      <no location info>                                489          0    0.0    0.0     0.0    0.0
- CAF:onlyChoice                                Lib                       src/Lib.hs:268:1-10                               430          0    0.0    0.0     0.0    0.0
-  onlyChoice                                   Lib                       src/Lib.hs:(268,1)-(271,27)                       605          1    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV1                             Lib                       <no location info>                                456          0    0.0    0.0     0.0    0.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        494          1    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV10                            Lib                       <no location info>                                419          0    0.0    0.0     0.0    0.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        560          0    0.0    0.0     0.0    0.0
-   pairsFromCSV.toPair                         Lib                       src/Lib.hs:(95,11)-(96,30)                        561          0    0.0    0.0     0.0    0.0
-    splitOn                                    Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         562          0    0.0    0.0     0.0    0.0
-     onSublist                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:278:1-72         563          0    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV3                             Lib                       <no location info>                                417          0    0.0    0.0     0.0    0.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        509          0    0.0    0.0     0.0    0.0
-   splitOn                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         510          0    0.0    0.0     0.0    0.0
-    dropDelims                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:295:1-39         512          1    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV4                             Lib                       <no location info>                                416          0    0.0    0.0     0.0    0.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        521          0    0.0    0.0     0.0    0.0
-   splitOn                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         522          0    0.0    0.0     0.0    0.0
-    onSublist                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:278:1-72         523          0    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV9                             Lib                       <no location info>                                420          0    0.0    0.0     0.0    0.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        547          0    0.0    0.0     0.0    0.0
-   pairsFromCSV.toPair                         Lib                       src/Lib.hs:(95,11)-(96,30)                        548          0    0.0    0.0     0.0    0.0
-    splitOn                                    Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         549          0    0.0    0.0     0.0    0.0
-     dropDelims                                Data.List.Split.Internals src/Data/List/Split/Internals.hs:295:1-39         550          1    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV_changeFormat                 Lib                       src/Lib.hs:98:11-22                               422          0    0.0    0.0     0.0    0.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        595          0    0.0    0.0     0.0    0.0
-   pairsFromCSV.changeFormat                   Lib                       src/Lib.hs:98:11-72                               596          1    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV_f                            Lib                       <no location info>                                418          0    0.0    0.0     0.0    0.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        499          0    0.0    0.0     0.0    0.0
-   splitOn                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         500          1    0.0    0.0     0.0    0.0
-    onSublist                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:278:1-72         508          1    0.0    0.0     0.0    0.0
-    split                                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:249:1-68         501          1    0.0    0.0     0.0    0.0
-     delimiter                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:25:30-38         520          1    0.0    0.0     0.0    0.0
-     postProcess                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(163,1)-(168,45) 504          1    0.0    0.0     0.0    0.0
-      condensePolicy                           Data.List.Split.Internals src/Data/List/Split/Internals.hs:32:30-43         515          1    0.0    0.0     0.0    0.0
-      delimPolicy                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:27:30-40         507          1    0.0    0.0     0.0    0.0
-      doMerge                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(205,1)-(207,14) 506          1    0.0    0.0     0.0    0.0
-      finalBlankPolicy                         Data.List.Split.Internals src/Data/List/Split/Internals.hs:37:30-45         532          1    0.0    0.0     0.0    0.0
-      initBlankPolicy                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:35:30-44         530          1    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV_g                            Lib                       <no location info>                                421          0    0.0    0.0     0.0    0.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        536          0    0.0    0.0     0.0    0.0
-   pairsFromCSV.toPair                         Lib                       src/Lib.hs:(95,11)-(96,30)                        537          0    0.0    0.0     0.0    0.0
-    splitOn                                    Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         538          1    0.0    0.0     0.0    0.0
-     onSublist                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:278:1-72         546          1    0.0    0.0     0.0    0.0
-     split                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:249:1-68         539          1    0.0    0.0     0.0    0.0
-      delimiter                                Data.List.Split.Internals src/Data/List/Split/Internals.hs:25:30-38         559          1    0.0    0.0     0.0    0.0
-      postProcess                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(163,1)-(168,45) 542          1    0.0    0.0     0.0    0.0
-       condensePolicy                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:32:30-43         553          1    0.0    0.0     0.0    0.0
-       delimPolicy                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:27:30-40         545          1    0.0    0.0     0.0    0.0
-       doMerge                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:(205,1)-(207,14) 544          1    0.0    0.0     0.0    0.0
-       finalBlankPolicy                        Data.List.Split.Internals src/Data/List/Split/Internals.hs:37:30-45         572          1    0.0    0.0     0.0    0.0
-       initBlankPolicy                         Data.List.Split.Internals src/Data/List/Split/Internals.hs:35:30-44         570          1    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV_parse                        Lib                       src/Lib.hs:97:11-15                               453          0    0.0    0.0     0.0    0.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        587          0    0.0    0.0     0.0    0.0
-   pairsFromCSV.parse                          Lib                       src/Lib.hs:97:11-43                               588          1    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV_toPair                       Lib                       src/Lib.hs:95:11-16                               455          0    0.0    0.0     0.0    0.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        533          0    0.0    0.0     0.0    0.0
-   pairsFromCSV.toPair                         Lib                       src/Lib.hs:(95,11)-(96,30)                        534          1    0.0    0.0     0.0    0.0
- CAF:pairsFromCSV_xs                           Lib                       <no location info>                                401          0    0.0    0.0     0.0    0.0
- CAF:rows2cols                                 Lib                       src/Lib.hs:127:1-9                                432          0    0.0    0.0     0.0    0.0
-  rows2cols                                    Lib                       src/Lib.hs:127:1-21                               627          1    0.0    0.0     0.0    0.0
- CAF:rows2squares                              Lib                       src/Lib.hs:133:1-12                               410          0    0.0    0.0     0.0    0.0
-  rows2squares                                 Lib                       src/Lib.hs:(133,1)-(137,25)                       621          1    0.0    0.0     0.0    0.0
- CAF:solvem                                    Main                      app/Main.hs:21:1-6                                488          0    0.0    0.0     0.0    0.0
-  solvem                                       Main                      app/Main.hs:21:1-18                               496          1    0.0    0.0     0.0    0.0
- CAF:solvingRound                              Lib                       src/Lib.hs:275:1-12                               445          0    0.0    0.0     0.0    0.0
-  solvingRound                                 Lib                       src/Lib.hs:275:1-54                               603          1    0.0    0.0     0.0    0.0
- CAF:squares2rows                              Lib                       src/Lib.hs:140:1-12                               443          0    0.0    0.0     0.0    0.0
-  squares2rows                                 Lib                       src/Lib.hs:(140,1)-(144,25)                       616          1    0.0    0.0     0.0    0.0
- main                                          Main                      app/Main.hs:(25,1)-(27,28)                        493          0    0.0    0.0   100.0  100.0
-  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        495          0    0.1    0.1     6.0    7.4
-   pairsFromCSV.changeFormat                   Lib                       src/Lib.hs:98:11-72                               597          0    0.1    0.2     0.3    0.4
-    pairsFromCSV.replace                       Lib                       src/Lib.hs:(99,11)-(102,46)                       598     162000    0.1    0.1     0.1    0.1
-    chunksOf                                   Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 600       2000    0.1    0.1     0.1    0.2
-     build                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         601       2000    0.0    0.0     0.0    0.0
-      chunksOf.splitter                        Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 602      18000    0.0    0.0     0.0    0.0
-   pairsFromCSV.parse                          Lib                       src/Lib.hs:97:11-43                               589          0    0.0    0.0     5.0    6.1
-    fromString                                 Lib                       src/Lib.hs:(75,1)-(82,38)                         590       2000    0.5    0.5     5.0    6.1
-     fromString.readCell                       Lib                       src/Lib.hs:(81,11)-(82,38)                        639     162000    4.5    5.3     4.5    5.3
-     fromString.\                              Lib                       src/Lib.hs:75:32-42                               629      18000    0.0    0.2     0.0    0.2
-     fromString.rPad9                          Lib                       src/Lib.hs:80:11-44                               594          0    0.1    0.1     0.1    0.1
-   pairsFromCSV.toPair                         Lib                       src/Lib.hs:(95,11)-(96,30)                        535          0    0.0    0.0     0.3    0.3
-    pairsFromCSV.toPair.\                      Lib                       src/Lib.hs:95:32-49                               583       1000    0.0    0.0     0.0    0.0
-    splitOn                                    Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         540          0    0.0    0.0     0.3    0.3
-     split                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:249:1-68         541          0    0.0    0.0     0.3    0.3
-      fromElem                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:(116,1)-(117,24) 599       2000    0.0    0.0     0.0    0.0
-      splitInternal                            Data.List.Split.Internals src/Data/List/Split/Internals.hs:(139,1)-(148,70) 554       2000    0.0    0.0     0.3    0.3
-       splitInternal.(...)                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         557       2000    0.0    0.0     0.3    0.3
-        breakDelim                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(151,1)-(156,36) 558     164000    0.2    0.3     0.3    0.3
-         matchDelim                            Data.List.Split.Internals src/Data/List/Split/Internals.hs:(73,1)-(77,23)   564     164000    0.1    0.0     0.1    0.0
-          matchDelim.\                         Data.List.Split.Internals src/Data/List/Split/Internals.hs:76:60-71         581       1000    0.0    0.0     0.0    0.0
-         breakDelim.(...)                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        576     162000    0.1    0.1     0.1    0.1
-         breakDelim.match                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        575     162000    0.0    0.0     0.0    0.0
-         breakDelim.ys                         Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        633     160000    0.0    0.0     0.0    0.0
-       splitInternal.match                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         573       2000    0.0    0.0     0.0    0.0
-       splitInternal.toSplitList               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(146,3)-(148,70) 574       2000    0.0    0.0     0.0    0.0
-       splitInternal.xs                        Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         556       2000    0.0    0.0     0.0    0.0
-      postProcess                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(163,1)-(168,45) 543          0    0.0    0.0     0.0    0.0
-       doCondense                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(178,1)-(183,20) 552       1000    0.0    0.0     0.0    0.0
-       doDrop                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(172,1)-(173,14) 568       1000    0.0    0.0     0.0    0.0
-       dropFinal                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(236,1)-(241,26) 571       1000    0.0    0.0     0.0    0.0
-       dropInitial                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(231,1)-(232,19) 569       1000    0.0    0.0     0.0    0.0
-       insertBlanks                            Data.List.Split.Internals src/Data/List/Split/Internals.hs:(189,1)-(191,38) 566       1000    0.0    0.0     0.0    0.0
-        insertBlanks'                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:(195,1)-(201,49) 567       4000    0.0    0.0     0.0    0.0
-   splitOn                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         502          0    0.0    0.0     0.2    0.3
-    onSublist                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:278:1-72         525          0    0.0    0.0     0.0    0.0
-    split                                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:249:1-68         503          0    0.0    0.0     0.2    0.3
-     fromElem                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(116,1)-(117,24) 555       1000    0.0    0.0     0.0    0.0
-     splitInternal                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(139,1)-(148,70) 516       1000    0.0    0.0     0.2    0.3
-      splitInternal.(...)                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         518       1000    0.0    0.0     0.2    0.3
-       breakDelim                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(151,1)-(156,36) 519     164000    0.1    0.3     0.2    0.3
-        matchDelim                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(73,1)-(77,23)   524     165000    0.0    0.0     0.0    0.0
-         matchDelim.\                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:76:60-71         582       1000    0.0    0.0     0.0    0.0
-        breakDelim.(...)                       Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        578     163000    0.1    0.1     0.1    0.1
-        breakDelim.ys                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        577     163000    0.0    0.0     0.0    0.0
-        breakDelim.match                       Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        697     162837    0.0    0.0     0.0    0.0
-      splitInternal.xs                         Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         517       1000    0.0    0.0     0.0    0.0
-      splitInternal.match                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         695        999    0.0    0.0     0.0    0.0
-      splitInternal.toSplitList                Data.List.Split.Internals src/Data/List/Split/Internals.hs:(146,3)-(148,70) 696        999    0.0    0.0     0.0    0.0
-     postProcess                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(163,1)-(168,45) 505          0    0.0    0.0     0.0    0.0
-      doCondense                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(178,1)-(183,20) 514          1    0.0    0.0     0.0    0.0
-      doDrop                                   Data.List.Split.Internals src/Data/List/Split/Internals.hs:(172,1)-(173,14) 528          1    0.0    0.0     0.0    0.0
-      dropFinal                                Data.List.Split.Internals src/Data/List/Split/Internals.hs:(236,1)-(241,26) 531          1    0.0    0.0     0.0    0.0
-      dropInitial                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(231,1)-(232,19) 529          1    0.0    0.0     0.0    0.0
-      insertBlanks                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(189,1)-(191,38) 526          1    0.0    0.0     0.0    0.0
-       insertBlanks'                           Data.List.Split.Internals src/Data/List/Split/Internals.hs:(195,1)-(201,49) 527       1999    0.0    0.0     0.0    0.0
-  solvem                                       Main                      app/Main.hs:21:1-18                               497          0    0.0    0.0    94.0   92.6
-   solvem'                                     Main                      app/Main.hs:(12,1)-(19,58)                        498       1001    0.1    0.0    94.0   92.6
-    ==                                         Lib                       src/Lib.hs:23:20-21                               693      81000    0.0    0.0     0.0    0.0
-    solvem''                                   Main                      app/Main.hs:(7,1)-(9,40)                          694       1000    0.0    0.0     0.0    0.0
-    solvem'.solved                             Main                      app/Main.hs:14:9-24                               584       1000    0.0    0.0    93.9   92.6
-     solve                                     Lib                       src/Lib.hs:(278,1)-(279,75)                       585       1000    0.2    0.0    93.9   92.6
-      ==                                       Lib                       src/Lib.hs:23:20-21                               689      98081    0.0    0.0     0.0    0.0
-      solve.iters                              Lib                       src/Lib.hs:278:15-44                              586       1000    0.0    0.0    93.7   92.6
-       solvingRound                            Lib                       src/Lib.hs:275:1-54                               604          0    0.0    0.0    93.7   92.6
-        disallowCliques                        Lib                       src/Lib.hs:(253,1)-(264,41)                       607       3030    0.6    0.4    88.6   87.0
-         disallowCliques.cs                    Lib                       src/Lib.hs:263:11-24                              608       3030    0.0    0.0    36.3   27.5
-          cliques                              Lib                       src/Lib.hs:(207,1)-(212,41)                       609       3030    0.0    0.1    36.3   27.5
-           cliques.colCs                       Lib                       src/Lib.hs:211:11-35                              660       3030    0.2    0.3     0.2    0.3
-           cliques.rowCs                       Lib                       src/Lib.hs:210:11-23                              610       3030    0.0    0.0     0.0    0.0
-           cliques.squareCs                    Lib                       src/Lib.hs:212:11-41                              661       3030    0.0    0.0     0.9    1.1
-            rows2squares                       Lib                       src/Lib.hs:(133,1)-(137,25)                       662          0    0.8    0.9     0.9    1.1
-             chunksOf                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 663      12120    0.0    0.1     0.1    0.2
-              build                            Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         664      12120    0.0    0.0     0.0    0.0
-               chunksOf.splitter               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 665      48480    0.0    0.0     0.0    0.0
-           cliques.sCs                         Lib                       src/Lib.hs:209:11-42                              613          0    0.3    0.6    35.2   26.0
-            cliques'                           Lib                       src/Lib.hs:(199,1)-(204,37)                       635      81810    1.3    2.0    34.9   25.3
-             tryIntoClique                     Lib                       src/Lib.hs:(177,1)-(196,66)                       641    1348640    4.1    0.7    32.6   22.1
-              tryIntoClique.(...)              Lib                       src/Lib.hs:179:27-39                              643    1348640    0.0    0.0     0.0    0.0
-              tryIntoClique.(...)              Lib                       src/Lib.hs:177:27-46                              642    1348640    3.6    8.1     3.6    8.1
-              tryIntoClique.a'                 Lib                       src/Lib.hs:179:27-39                              645    1348640    0.0    0.0     0.0    0.0
-              tryIntoClique.as                 Lib                       src/Lib.hs:177:27-46                              644    1348640    0.0    0.0     0.0    0.0
-              tryIntoClique.is                 Lib                       src/Lib.hs:177:27-46                              646    1348640    0.0    0.0     0.0    0.0
-              tryIntoClique.isClique1          Lib                       src/Lib.hs:180:27-79                              647    1348640    0.7    0.3     0.7    0.3
-              tryIntoClique.sharedAs           Lib                       src/Lib.hs:182:27-53                              655    1302084    0.1    0.0     8.4    3.2
-               intersections                   Lib                       src/Lib.hs:173:1-39                               656    1302084    8.3    3.2     8.3    3.2
-              tryIntoClique.uniqueAs           Lib                       src/Lib.hs:188:27-60                              657    1302084    1.6    0.6     1.6    0.6
-              tryIntoClique.otherAs            Lib                       src/Lib.hs:187:27-67                              659     535203    9.0    6.7     9.0    6.7
-              tryIntoClique.otherCells         Lib                       src/Lib.hs:(183,27)-(186,49)                      658     535203    5.2    2.5     5.2    2.5
-              tryIntoClique.as'                Lib                       src/Lib.hs:179:27-39                              653     343967    0.0    0.0     0.0    0.0
-             cliques'.g'                       Lib                       src/Lib.hs:204:11-37                              636      81810    0.1    0.1     0.4    0.2
-              unwrapEmpty                      Lib                       src/Lib.hs:(118,1)-(119,35)                       637     736290    0.3    0.1     0.3    0.1
-             safeInit                          Lib                       src/Lib.hs:(168,1)-(169,20)                       640      81810    0.6    1.0     0.6    1.0
-         disallowCliques.sub                   Lib                       src/Lib.hs:264:11-41                              667       1948    0.1    0.1    50.8   57.9
-          disallowCliques'                     Lib                       src/Lib.hs:(249,1)-(250,41)                       676      52596    0.3    0.4    50.7   57.9
-           applyAll                            Lib                       src/Lib.hs:(223,1)-(224,37)                       679     410847    0.4    0.2     5.5    6.9
-            disallowClique'                    Lib                       src/Lib.hs:(243,1)-(246,56)                       681          0    0.1    0.0     5.1    6.7
-             disallowCliqueA                   Lib                       src/Lib.hs:(229,1)-(232,31)                       682     358251    1.5    3.8     4.1    5.6
-              disallowCliqueA.removeVsIfOther  Lib                       src/Lib.hs:(230,11)-(232,31)                      684    3224259    2.6    1.7     2.6    1.7
-             disallowCliqueB                   Lib                       src/Lib.hs:(237,1)-(240,32)                       683     100629    0.4    1.1     0.9    1.1
-              disallowCliqueB.removeAsIfMember Lib                       src/Lib.hs:(238,11)-(240,32)                      685     905661    0.5    0.0     0.5    0.0
-           disallowClique'                     Lib                       src/Lib.hs:(243,1)-(246,56)                       680     358251    0.2    0.1     0.2    0.1
-           disallowCliques'.myCs               Lib                       src/Lib.hs:250:11-41                              677      52596    2.1    0.3    44.7   50.5
-            contains                           Lib                       src/Lib.hs:220:1-64                               678    4816044   42.6   50.2    42.6   50.2
-         rows2squares                          Lib                       src/Lib.hs:(133,1)-(137,25)                       672          0    0.3    0.6     0.5    0.7
-          chunksOf                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 673       7792    0.1    0.1     0.2    0.1
-           build                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         674       7792    0.0    0.0     0.1    0.0
-            chunksOf.splitter                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 675      31168    0.1    0.0     0.1    0.0
-         squares2rows                          Lib                       src/Lib.hs:(140,1)-(144,25)                       668          0    0.2    0.3     0.5    0.5
-          chunksOf                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 669      19480    0.2    0.2     0.3    0.2
-           build                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         670      19480    0.0    0.0     0.1    0.1
-            chunksOf.splitter                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 671      77920    0.1    0.1     0.1    0.1
-           chunksOf.splitter                   Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 686          0    0.0    0.0     0.0    0.0
-        disallow                               Lib                       src/Lib.hs:(156,1)-(162,24)                       615          0    0.6    0.7     4.8    5.3
-         disallow'                             Lib                       src/Lib.hs:(147,1)-(153,30)                       628      81810    0.6    0.9     2.8    2.7
-          mapEmpty                             Lib                       src/Lib.hs:(122,1)-(123,28)                       638     736290    1.1    0.9     1.1    0.9
-          disallow'.disallowed                 Lib                       src/Lib.hs:(149,11)-(153,30)                      650      40379    1.1    0.8     1.1    0.9
-           unwrapFull                          Lib                       src/Lib.hs:(114,1)-(115,32)                       651     363411    0.1    0.1     0.1    0.1
-         rows2squares                          Lib                       src/Lib.hs:(133,1)-(137,25)                       622          0    0.5    0.9     0.7    1.1
-          chunksOf                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 623      12120    0.1    0.1     0.2    0.2
-           build                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         624      12120    0.0    0.0     0.1    0.0
-            chunksOf.splitter                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 625      48480    0.1    0.0     0.1    0.0
-         squares2rows                          Lib                       src/Lib.hs:(140,1)-(144,25)                       617          0    0.2    0.4     0.7    0.8
-          chunksOf                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 618      30300    0.3    0.3     0.5    0.4
-           build                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         619      30300    0.0    0.0     0.1    0.1
-            chunksOf.splitter                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 620     121200    0.1    0.1     0.1    0.1
-           chunksOf.splitter                   Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 632          0    0.0    0.0     0.0    0.0
-        onlyChoice                             Lib                       src/Lib.hs:(268,1)-(271,27)                       606          0    0.2    0.4     0.3    0.4
-         onlyChoice.onlyChoice'                Lib                       src/Lib.hs:(269,11)-(271,27)                      688     245430    0.0    0.0     0.0    0.0
-    isSolved                                   Lib                       src/Lib.hs:111:1-27                               691          0    0.0    0.0     0.0    0.0
-     isFull                                    Lib                       src/Lib.hs:(105,1)-(106,26)                       692      81000    0.0    0.0     0.0    0.0
+MAIN                                           MAIN                      <built-in>                                        244          0    0.0    0.0   100.0  100.0
+ CAF                                           Debug.Trace               <entire-module>                                   352          0    0.0    0.0     0.0    0.0
+ CAF                                           GHC.Conc.Signal           <entire-module>                                   341          0    0.0    0.0     0.0    0.0
+ CAF                                           GHC.IO.Encoding           <entire-module>                                   323          0    0.0    0.0     0.0    0.0
+ CAF                                           GHC.IO.Encoding.Iconv     <entire-module>                                   321          0    0.0    0.0     0.0    0.0
+ CAF                                           GHC.IO.FD                 <entire-module>                                   314          0    0.0    0.0     0.0    0.0
+ CAF                                           GHC.IO.Handle.FD          <entire-module>                                   312          0    0.0    0.0     0.0    0.0
+ CAF                                           Text.Read.Lex             <entire-module>                                   274          0    0.0    0.0     0.0    0.0
+ CAF                                           GHC.Event.Thread          <entire-module>                                   261          0    0.0    0.0     0.0    0.0
+ CAF:$fEqBitSet2                               BitSet9                   <no location info>                                442          0    0.0    0.0     0.0    0.0
+  ==                                           BitSet9                   src/BitSet9.hs:23:40-41                           680          1    0.0    0.0     0.0    0.0
+ CAF:\\\2                                      BitSet9                   <no location info>                                452          0    0.0    0.0     0.0    0.0
+  fullInt                                      BitSet9                   src/BitSet9.hs:44:1-35                            652          1    0.0    0.0     0.0    0.0
+   fullInt.n                                   BitSet9                   src/BitSet9.hs:44:15-30                           653          1    0.0    0.0     0.0    0.0
+ CAF:\\\3                                      BitSet9                   <no location info>                                451          0    0.0    0.0     0.0    0.0
+  fullInt                                      BitSet9                   src/BitSet9.hs:44:1-35                            654          0    0.0    0.0     0.0    0.0
+   fullInt.(...)                               BitSet9                   src/BitSet9.hs:44:15-30                           655          1    0.0    0.0     0.0    0.0
+ CAF:cliques_sCs                               Lib                       src/Lib.hs:201:11-13                              431          0    0.0    0.0     0.0    0.0
+  cliques                                      Lib                       src/Lib.hs:(199,1)-(204,41)                       607          0    0.0    0.0     0.0    0.0
+   cliques.sCs                                 Lib                       src/Lib.hs:201:11-42                              608          1    0.0    0.0     0.0    0.0
+ CAF:cols2rows                                 Lib                       src/Lib.hs:130:1-9                                429          0    0.0    0.0     0.0    0.0
+  cols2rows                                    Lib                       src/Lib.hs:130:1-21                               622          1    0.0    0.0     0.0    0.0
+ CAF:defaultSplitter                           Data.List.Split.Internals src/Data/List/Split/Internals.hs:58:1-15          375          0    0.0    0.0     0.0    0.0
+  defaultSplitter                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(58,1)-(63,28)   507          1    0.0    0.0     0.0    0.0
+ CAF:disallow                                  Lib                       src/Lib.hs:152:1-8                                438          0    0.0    0.0     0.0    0.0
+  disallow                                     Lib                       src/Lib.hs:(152,1)-(158,24)                       610          1    0.0    0.0     0.0    0.0
+ CAF:fromList                                  BitSet9                   src/BitSet9.hs:56:1-8                             448          0    0.0    0.0     0.0    0.0
+  fromList                                     BitSet9                   src/BitSet9.hs:56:1-37                            645          1    0.0    0.0     0.0    0.0
+ CAF:fromList1                                 BitSet9                   <no location info>                                440          0    0.0    0.0     0.0    0.0
+  empty                                        BitSet9                   src/BitSet9.hs:29:1-17                            648          1    0.0    0.0     0.0    0.0
+ CAF:fromString1                               Lib                       <no location info>                                415          0    0.0    0.0     0.0    0.0
+  fromString                                   Lib                       src/Lib.hs:(75,1)-(82,38)                         588          0    0.0    0.0     0.0    0.0
+   fromString.rPad9                            Lib                       src/Lib.hs:80:11-44                               589          1    0.0    0.0     0.0    0.0
+ CAF:fromString10                              Lib                       <no location info>                                413          0    0.0    0.0     0.0    0.0
+  fromString                                   Lib                       src/Lib.hs:(75,1)-(82,38)                         587          0    0.0    0.0     0.0    0.0
+ CAF:fromString9                               Lib                       <no location info>                                412          0    0.0    0.0     0.0    0.0
+  fromString.readCell                          Lib                       src/Lib.hs:(81,11)-(82,38)                        659          0    0.0    0.0     0.0    0.0
+ CAF:fromString_g                              Lib                       <no location info>                                414          0    0.0    0.0     0.0    0.0
+  fromString                                   Lib                       src/Lib.hs:(75,1)-(82,38)                         626          0    0.0    0.0     0.0    0.0
+   fromString.rPad9                            Lib                       src/Lib.hs:80:11-44                               627          1    0.0    0.0     0.0    0.0
+ CAF:full                                      BitSet9                   src/BitSet9.hs:35:1-4                             450          0    0.0    0.0     0.0    0.0
+  full                                         BitSet9                   src/BitSet9.hs:35:1-22                            644          1    0.0    0.0     0.0    0.0
+   fromList                                    BitSet9                   src/BitSet9.hs:56:1-37                            646          0    0.0    0.0     0.0    0.0
+    flipBit                                    BitSet9                   src/BitSet9.hs:53:1-49                            649          9    0.0    0.0     0.0    0.0
+ CAF:full1                                     BitSet9                   <no location info>                                449          0    0.0    0.0     0.0    0.0
+  full                                         BitSet9                   src/BitSet9.hs:35:1-22                            647          0    0.0    0.0     0.0    0.0
+ CAF:intersections                             BitSet9                   src/BitSet9.hs:93:1-13                            444          0    0.0    0.0     0.0    0.0
+  intersections                                BitSet9                   src/BitSet9.hs:93:1-27                            667          1    0.0    0.0     0.0    0.0
+ CAF:invertInt                                 BitSet9                   src/BitSet9.hs:47:1-9                             453          0    0.0    0.0     0.0    0.0
+  invertInt                                    BitSet9                   src/BitSet9.hs:47:1-27                            650          1    0.0    0.0     0.0    0.0
+ CAF:isSolved1                                 Lib                       <no location info>                                384          0    0.0    0.0     0.0    0.0
+  isSolved                                     Lib                       src/Lib.hs:111:1-27                               718          1    0.0    0.0     0.0    0.0
+ CAF:main1                                     Main                      <no location info>                                486          0    0.0    0.0     0.0    0.0
+  main                                         Main                      app/Main.hs:(25,1)-(27,28)                        488          1    0.0    0.0     0.0    0.0
+ CAF:main2                                     Main                      <no location info>                                485          0    0.0    0.0     0.0    0.0
+ CAF:onlyChoice                                Lib                       src/Lib.hs:258:1-10                               428          0    0.0    0.0     0.0    0.0
+  onlyChoice                                   Lib                       src/Lib.hs:(258,1)-(261,31)                       601          1    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV1                             Lib                       <no location info>                                421          0    0.0    0.0     0.0    0.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        490          1    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV10                            Lib                       <no location info>                                406          0    0.0    0.0     0.0    0.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        556          0    0.0    0.0     0.0    0.0
+   pairsFromCSV.toPair                         Lib                       src/Lib.hs:(95,11)-(96,30)                        557          0    0.0    0.0     0.0    0.0
+    splitOn                                    Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         558          0    0.0    0.0     0.0    0.0
+     onSublist                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:278:1-72         559          0    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV3                             Lib                       <no location info>                                404          0    0.0    0.0     0.0    0.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        505          0    0.0    0.0     0.0    0.0
+   splitOn                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         506          0    0.0    0.0     0.0    0.0
+    dropDelims                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:295:1-39         508          1    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV4                             Lib                       <no location info>                                403          0    0.0    0.0     0.0    0.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        517          0    0.0    0.0     0.0    0.0
+   splitOn                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         518          0    0.0    0.0     0.0    0.0
+    onSublist                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:278:1-72         519          0    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV9                             Lib                       <no location info>                                407          0    0.0    0.0     0.0    0.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        543          0    0.0    0.0     0.0    0.0
+   pairsFromCSV.toPair                         Lib                       src/Lib.hs:(95,11)-(96,30)                        544          0    0.0    0.0     0.0    0.0
+    splitOn                                    Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         545          0    0.0    0.0     0.0    0.0
+     dropDelims                                Data.List.Split.Internals src/Data/List/Split/Internals.hs:295:1-39         546          1    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV_changeFormat                 Lib                       src/Lib.hs:98:11-22                               409          0    0.0    0.0     0.0    0.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        591          0    0.0    0.0     0.0    0.0
+   pairsFromCSV.changeFormat                   Lib                       src/Lib.hs:98:11-72                               592          1    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV_f                            Lib                       <no location info>                                405          0    0.0    0.0     0.0    0.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        495          0    0.0    0.0     0.0    0.0
+   splitOn                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         496          1    0.0    0.0     0.0    0.0
+    onSublist                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:278:1-72         504          1    0.0    0.0     0.0    0.0
+    split                                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:249:1-68         497          1    0.0    0.0     0.0    0.0
+     delimiter                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:25:30-38         516          1    0.0    0.0     0.0    0.0
+     postProcess                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(163,1)-(168,45) 500          1    0.0    0.0     0.0    0.0
+      condensePolicy                           Data.List.Split.Internals src/Data/List/Split/Internals.hs:32:30-43         511          1    0.0    0.0     0.0    0.0
+      delimPolicy                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:27:30-40         503          1    0.0    0.0     0.0    0.0
+      doMerge                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(205,1)-(207,14) 502          1    0.0    0.0     0.0    0.0
+      finalBlankPolicy                         Data.List.Split.Internals src/Data/List/Split/Internals.hs:37:30-45         528          1    0.0    0.0     0.0    0.0
+      initBlankPolicy                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:35:30-44         526          1    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV_g                            Lib                       <no location info>                                408          0    0.0    0.0     0.0    0.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        532          0    0.0    0.0     0.0    0.0
+   pairsFromCSV.toPair                         Lib                       src/Lib.hs:(95,11)-(96,30)                        533          0    0.0    0.0     0.0    0.0
+    splitOn                                    Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         534          1    0.0    0.0     0.0    0.0
+     onSublist                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:278:1-72         542          1    0.0    0.0     0.0    0.0
+     split                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:249:1-68         535          1    0.0    0.0     0.0    0.0
+      delimiter                                Data.List.Split.Internals src/Data/List/Split/Internals.hs:25:30-38         555          1    0.0    0.0     0.0    0.0
+      postProcess                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(163,1)-(168,45) 538          1    0.0    0.0     0.0    0.0
+       condensePolicy                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:32:30-43         549          1    0.0    0.0     0.0    0.0
+       delimPolicy                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:27:30-40         541          1    0.0    0.0     0.0    0.0
+       doMerge                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:(205,1)-(207,14) 540          1    0.0    0.0     0.0    0.0
+       finalBlankPolicy                        Data.List.Split.Internals src/Data/List/Split/Internals.hs:37:30-45         568          1    0.0    0.0     0.0    0.0
+       initBlankPolicy                         Data.List.Split.Internals src/Data/List/Split/Internals.hs:35:30-44         566          1    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV_parse                        Lib                       src/Lib.hs:97:11-15                               418          0    0.0    0.0     0.0    0.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        583          0    0.0    0.0     0.0    0.0
+   pairsFromCSV.parse                          Lib                       src/Lib.hs:97:11-43                               584          1    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV_toPair                       Lib                       src/Lib.hs:95:11-16                               420          0    0.0    0.0     0.0    0.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        529          0    0.0    0.0     0.0    0.0
+   pairsFromCSV.toPair                         Lib                       src/Lib.hs:(95,11)-(96,30)                        530          1    0.0    0.0     0.0    0.0
+ CAF:pairsFromCSV_xs                           Lib                       <no location info>                                392          0    0.0    0.0     0.0    0.0
+ CAF:rows2cols                                 Lib                       src/Lib.hs:127:1-9                                430          0    0.0    0.0     0.0    0.0
+  rows2cols                                    Lib                       src/Lib.hs:127:1-21                               623          1    0.0    0.0     0.0    0.0
+ CAF:rows2squares                              Lib                       src/Lib.hs:133:1-12                               386          0    0.0    0.0     0.0    0.0
+  rows2squares                                 Lib                       src/Lib.hs:(133,1)-(137,25)                       617          1    0.0    0.0     0.0    0.0
+ CAF:solvem                                    Main                      app/Main.hs:21:1-6                                484          0    0.0    0.0     0.0    0.0
+  solvem                                       Main                      app/Main.hs:21:1-18                               492          1    0.0    0.0     0.0    0.0
+ CAF:solvingRound                              Lib                       src/Lib.hs:265:1-12                               439          0    0.0    0.0     0.0    0.0
+  solvingRound                                 Lib                       src/Lib.hs:265:1-54                               599          1    0.0    0.0     0.0    0.0
+ CAF:squares2rows                              Lib                       src/Lib.hs:140:1-12                               437          0    0.0    0.0     0.0    0.0
+  squares2rows                                 Lib                       src/Lib.hs:(140,1)-(144,25)                       612          1    0.0    0.0     0.0    0.0
+ CAF:unions                                    BitSet9                   src/BitSet9.hs:90:1-6                             445          0    0.0    0.0     0.0    0.0
+  unions                                       BitSet9                   src/BitSet9.hs:90:1-25                            673          1    0.0    0.0     0.0    0.0
+ main                                          Main                      app/Main.hs:(25,1)-(27,28)                        489          0    0.0    0.0   100.0  100.0
+  pairsFromCSV                                 Lib                       src/Lib.hs:(90,1)-(102,46)                        491          0    0.1    0.1     4.6    7.3
+   pairsFromCSV.changeFormat                   Lib                       src/Lib.hs:98:11-72                               593          0    0.1    0.2     0.2    0.4
+    pairsFromCSV.replace                       Lib                       src/Lib.hs:(99,11)-(102,46)                       594     162000    0.0    0.1     0.0    0.1
+    chunksOf                                   Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 596       2000    0.1    0.1     0.2    0.2
+     build                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         597       2000    0.0    0.0     0.1    0.0
+      chunksOf.splitter                        Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 598      18000    0.1    0.0     0.1    0.0
+   pairsFromCSV.parse                          Lib                       src/Lib.hs:97:11-43                               585          0    0.0    0.0     3.8    6.1
+    fromString                                 Lib                       src/Lib.hs:(75,1)-(82,38)                         586       2000    0.2    0.5     3.8    6.1
+     fromString.readCell                       Lib                       src/Lib.hs:(81,11)-(82,38)                        635     162000    3.5    5.3     3.5    5.3
+     fromString.\                              Lib                       src/Lib.hs:75:32-42                               625      18000    0.0    0.2     0.0    0.2
+     fromString.rPad9                          Lib                       src/Lib.hs:80:11-44                               590          0    0.1    0.1     0.1    0.1
+   pairsFromCSV.toPair                         Lib                       src/Lib.hs:(95,11)-(96,30)                        531          0    0.1    0.0     0.3    0.3
+    pairsFromCSV.toPair.\                      Lib                       src/Lib.hs:95:32-49                               579       1000    0.0    0.0     0.0    0.0
+    splitOn                                    Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         536          0    0.0    0.0     0.2    0.3
+     split                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:249:1-68         537          0    0.0    0.0     0.2    0.3
+      fromElem                                 Data.List.Split.Internals src/Data/List/Split/Internals.hs:(116,1)-(117,24) 595       2000    0.0    0.0     0.0    0.0
+      splitInternal                            Data.List.Split.Internals src/Data/List/Split/Internals.hs:(139,1)-(148,70) 550       2000    0.0    0.0     0.2    0.3
+       splitInternal.(...)                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         553       2000    0.0    0.0     0.2    0.3
+        breakDelim                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(151,1)-(156,36) 554     164000    0.1    0.3     0.2    0.3
+         matchDelim                            Data.List.Split.Internals src/Data/List/Split/Internals.hs:(73,1)-(77,23)   560     164000    0.1    0.0     0.1    0.0
+          matchDelim.\                         Data.List.Split.Internals src/Data/List/Split/Internals.hs:76:60-71         577       1000    0.0    0.0     0.0    0.0
+         breakDelim.(...)                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        572     162000    0.1    0.1     0.1    0.1
+         breakDelim.match                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        571     162000    0.0    0.0     0.0    0.0
+         breakDelim.ys                         Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        629     160000    0.1    0.0     0.1    0.0
+       splitInternal.match                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         569       2000    0.0    0.0     0.0    0.0
+       splitInternal.toSplitList               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(146,3)-(148,70) 570       2000    0.0    0.0     0.0    0.0
+       splitInternal.xs                        Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         552       2000    0.0    0.0     0.0    0.0
+      postProcess                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(163,1)-(168,45) 539          0    0.0    0.0     0.0    0.0
+       doCondense                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(178,1)-(183,20) 548       1000    0.0    0.0     0.0    0.0
+       doDrop                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(172,1)-(173,14) 564       1000    0.0    0.0     0.0    0.0
+       dropFinal                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(236,1)-(241,26) 567       1000    0.0    0.0     0.0    0.0
+       dropInitial                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(231,1)-(232,19) 565       1000    0.0    0.0     0.0    0.0
+       insertBlanks                            Data.List.Split.Internals src/Data/List/Split/Internals.hs:(189,1)-(191,38) 562       1000    0.0    0.0     0.0    0.0
+        insertBlanks'                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:(195,1)-(201,49) 563       4000    0.0    0.0     0.0    0.0
+   splitOn                                     Data.List.Split.Internals src/Data/List/Split/Internals.hs:421:1-42         498          0    0.0    0.0     0.2    0.3
+    split                                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:249:1-68         499          0    0.0    0.0     0.2    0.3
+     fromElem                                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(116,1)-(117,24) 551       1000    0.0    0.0     0.0    0.0
+     splitInternal                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(139,1)-(148,70) 512       1000    0.0    0.0     0.2    0.3
+      splitInternal.(...)                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         514       1000    0.0    0.0     0.2    0.3
+       breakDelim                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(151,1)-(156,36) 515     164000    0.1    0.3     0.2    0.3
+        matchDelim                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(73,1)-(77,23)   520     165000    0.0    0.0     0.0    0.0
+         matchDelim.\                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:76:60-71         578       1000    0.0    0.0     0.0    0.0
+        breakDelim.(...)                       Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        574     163000    0.1    0.1     0.1    0.1
+        breakDelim.ys                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        573     163000    0.0    0.0     0.0    0.0
+        breakDelim.match                       Data.List.Split.Internals src/Data/List/Split/Internals.hs:155:25-52        725     162837    0.0    0.0     0.0    0.0
+      splitInternal.xs                         Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         513       1000    0.0    0.0     0.0    0.0
+      splitInternal.match                      Data.List.Split.Internals src/Data/List/Split/Internals.hs:144:3-31         723        999    0.0    0.0     0.0    0.0
+      splitInternal.toSplitList                Data.List.Split.Internals src/Data/List/Split/Internals.hs:(146,3)-(148,70) 724        999    0.0    0.0     0.0    0.0
+     postProcess                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(163,1)-(168,45) 501          0    0.0    0.0     0.0    0.0
+      doCondense                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(178,1)-(183,20) 510          1    0.0    0.0     0.0    0.0
+      doDrop                                   Data.List.Split.Internals src/Data/List/Split/Internals.hs:(172,1)-(173,14) 524          1    0.0    0.0     0.0    0.0
+      dropFinal                                Data.List.Split.Internals src/Data/List/Split/Internals.hs:(236,1)-(241,26) 527          1    0.0    0.0     0.0    0.0
+      dropInitial                              Data.List.Split.Internals src/Data/List/Split/Internals.hs:(231,1)-(232,19) 525          1    0.0    0.0     0.0    0.0
+      insertBlanks                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(189,1)-(191,38) 522          1    0.0    0.0     0.0    0.0
+       insertBlanks'                           Data.List.Split.Internals src/Data/List/Split/Internals.hs:(195,1)-(201,49) 523       1999    0.0    0.0     0.0    0.0
+  solvem                                       Main                      app/Main.hs:21:1-18                               493          0    0.0    0.0    95.4   92.7
+   solvem'                                     Main                      app/Main.hs:(12,1)-(19,58)                        494       1001    0.1    0.0    95.4   92.7
+    ==                                         Lib                       src/Lib.hs:23:20-21                               721      81000    0.1    0.0     0.1    0.0
+    solvem''                                   Main                      app/Main.hs:(7,1)-(9,40)                          722       1000    0.0    0.0     0.0    0.0
+    solvem'.solved                             Main                      app/Main.hs:14:9-24                               580       1000    0.0    0.0    95.2   92.7
+     solve                                     Lib                       src/Lib.hs:(268,1)-(269,75)                       581       1000    0.1    0.0    95.2   92.7
+      ==                                       Lib                       src/Lib.hs:23:20-21                               715      98081    0.0    0.0     0.0    0.0
+      solve.iters                              Lib                       src/Lib.hs:268:15-44                              582       1000    0.0    0.0    95.1   92.6
+       solvingRound                            Lib                       src/Lib.hs:265:1-54                               600          0    0.0    0.0    95.1   92.6
+        disallowCliques                        Lib                       src/Lib.hs:(243,1)-(254,41)                       603       3030    0.5    0.4    91.7   88.1
+         disallowCliques.cs                    Lib                       src/Lib.hs:253:11-24                              604       3030    0.0    0.0    41.6   28.9
+          cliques                              Lib                       src/Lib.hs:(199,1)-(204,41)                       605       3030    0.0    0.1    41.6   28.9
+           cliques.colCs                       Lib                       src/Lib.hs:203:11-35                              682       3030    0.3    0.3     0.3    0.3
+           cliques.rowCs                       Lib                       src/Lib.hs:202:11-23                              606       3030    0.0    0.0     0.0    0.0
+           cliques.squareCs                    Lib                       src/Lib.hs:204:11-41                              683       3030    0.0    0.0     0.7    1.1
+            rows2squares                       Lib                       src/Lib.hs:(133,1)-(137,25)                       684          0    0.6    0.9     0.7    1.1
+             chunksOf                          Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 685      12120    0.1    0.1     0.2    0.2
+              build                            Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         686      12120    0.0    0.0     0.1    0.0
+               chunksOf.splitter               Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 687      48480    0.1    0.0     0.1    0.0
+           cliques.sCs                         Lib                       src/Lib.hs:201:11-42                              609          0    0.4    0.6    40.6   27.4
+            cliques'                           Lib                       src/Lib.hs:(191,1)-(196,37)                       631      81810    1.6    2.0    40.2   26.8
+             tryIntoClique                     Lib                       src/Lib.hs:(169,1)-(188,66)                       637    1348640    5.8    1.3    37.7   23.6
+              tryIntoClique.(...)              Lib                       src/Lib.hs:171:27-39                              641    1348640    0.0    0.0     0.0    0.0
+              tryIntoClique.(...)              Lib                       src/Lib.hs:169:27-46                              638    1348640    3.5    8.1     3.5    8.1
+              tryIntoClique.a'                 Lib                       src/Lib.hs:171:27-39                              661    1348640    0.0    0.0     0.0    0.0
+              tryIntoClique.as                 Lib                       src/Lib.hs:169:27-46                              642    1348640    0.0    0.0     0.0    0.0
+              tryIntoClique.is                 Lib                       src/Lib.hs:169:27-46                              639    1348640    0.0    0.0     0.0    0.0
+              tryIntoClique.isClique1          Lib                       src/Lib.hs:172:27-76                              640    1348640    0.9    0.2     3.7    0.2
+               len                             BitSet9                   src/BitSet9.hs:(38,1)-(42,51)                     662    1348640    0.3    0.0     2.6    0.0
+                len.len'                       BitSet9                   src/BitSet9.hs:(39,11)-(42,51)                    663   11983189    2.3    0.0     2.3    0.0
+               ==                              BitSet9                   src/BitSet9.hs:23:40-41                           681          0    0.3    0.0     0.3    0.0
+              len                              BitSet9                   src/BitSet9.hs:(38,1)-(42,51)                     677    1302084    0.3    0.0     0.5    0.0
+               len.len'                        BitSet9                   src/BitSet9.hs:(39,11)-(42,51)                    678    2100573    0.3    0.0     0.3    0.0
+              tryIntoClique.otherAs            Lib                       src/Lib.hs:179:27-63                              672    1302084    2.9    4.9     6.1    7.8
+               unions                          BitSet9                   src/BitSet9.hs:90:1-25                            674          0    1.9    2.1     3.2    2.9
+                \/                             BitSet9                   src/BitSet9.hs:82:1-50                            676    3926346    1.3    0.8     1.3    0.8
+              tryIntoClique.otherCells         Lib                       src/Lib.hs:(175,27)-(178,49)                      675    1302084   14.8    5.7    14.8    5.7
+              tryIntoClique.sharedAs           Lib                       src/Lib.hs:174:27-53                              666    1302084    0.9    0.0     1.7    0.3
+               intersections                   BitSet9                   src/BitSet9.hs:93:1-27                            668          0    0.8    0.3     0.8    0.3
+                /\                             BitSet9                   src/BitSet9.hs:87:1-50                            679    2725975    0.0    0.0     0.0    0.0
+              tryIntoClique.uniqueAs           Lib                       src/Lib.hs:180:27-57                              669    1302084    0.2    0.0     1.5    0.3
+               \\\                             BitSet9                   src/BitSet9.hs:97:1-61                            670    1302084    0.7    0.0     1.3    0.3
+                invertInt                      BitSet9                   src/BitSet9.hs:47:1-27                            671          0    0.6    0.3     0.6    0.3
+              tryIntoClique.as'                Lib                       src/Lib.hs:171:27-39                              664     343967    0.0    0.0     0.0    0.0
+             cliques'.g'                       Lib                       src/Lib.hs:196:11-37                              632      81810    0.2    0.1     0.3    0.2
+              unwrapEmpty                      Lib                       src/Lib.hs:(118,1)-(119,35)                       633     736290    0.1    0.1     0.1    0.1
+             safeInit                          Lib                       src/Lib.hs:(164,1)-(165,20)                       636      81810    0.7    1.0     0.7    1.0
+         disallowCliques.sub                   Lib                       src/Lib.hs:254:11-41                              689       1948    0.3    0.1    48.7   57.6
+          disallowCliques'                     Lib                       src/Lib.hs:(239,1)-(240,41)                       698      52596    0.3    0.4    48.4   57.5
+           applyAll                            Lib                       src/Lib.hs:(213,1)-(214,37)                       701     410847    0.3    0.2     5.3    6.6
+            disallowClique'                    Lib                       src/Lib.hs:(233,1)-(236,56)                       703          0    0.1    0.0     5.0    6.4
+             disallowCliqueA                   Lib                       src/Lib.hs:(219,1)-(222,31)                       704     358251    1.3    3.8     3.8    5.3
+              disallowCliqueA.removeVsIfOther  Lib                       src/Lib.hs:(220,11)-(222,31)                      706    3224259    2.0    1.2     2.5    1.5
+               \\\                             BitSet9                   src/BitSet9.hs:97:1-61                            712     783330    0.3    0.2     0.5    0.3
+                invertInt                      BitSet9                   src/BitSet9.hs:47:1-27                            713          0    0.2    0.2     0.2    0.2
+             disallowCliqueB                   Lib                       src/Lib.hs:(227,1)-(230,32)                       705     100629    0.4    1.1     1.1    1.1
+              disallowCliqueB.removeAsIfMember Lib                       src/Lib.hs:(228,11)-(230,32)                      707     905661    0.6    0.0     0.6    0.0
+           disallowClique'                     Lib                       src/Lib.hs:(233,1)-(236,56)                       702     358251    0.3    0.1     0.3    0.1
+           disallowCliques'.myCs               Lib                       src/Lib.hs:240:11-41                              699      52596    2.0    0.3    42.5   50.4
+            contains                           Lib                       src/Lib.hs:209:1-64                               700    4816044   40.5   50.1    40.5   50.1
+         rows2squares                          Lib                       src/Lib.hs:(133,1)-(137,25)                       694          0    0.4    0.6     0.4    0.7
+          chunksOf                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 695       7792    0.0    0.1     0.0    0.1
+           build                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         696       7792    0.0    0.0     0.0    0.0
+            chunksOf.splitter                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 697      31168    0.0    0.0     0.0    0.0
+         squares2rows                          Lib                       src/Lib.hs:(140,1)-(144,25)                       690          0    0.3    0.3     0.5    0.5
+          chunksOf                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 691      19480    0.2    0.2     0.3    0.2
+           build                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         692      19480    0.0    0.0     0.1    0.1
+            chunksOf.splitter                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 693      77920    0.1    0.1     0.1    0.1
+        disallow                               Lib                       src/Lib.hs:(152,1)-(158,24)                       611          0    0.7    0.7     3.1    4.0
+         disallow'                             Lib                       src/Lib.hs:(147,1)-(149,65)                       624      81810    0.3    0.9     1.1    1.4
+          mapEmpty                             Lib                       src/Lib.hs:(122,1)-(123,28)                       634     736290    0.3    0.2     0.4    0.2
+           \\\                                 BitSet9                   src/BitSet9.hs:97:1-61                            643     165879    0.1    0.0     0.1    0.1
+            invertInt                          BitSet9                   src/BitSet9.hs:47:1-27                            651          0    0.0    0.0     0.0    0.0
+          disallow'.disallowed                 Lib                       src/Lib.hs:149:11-65                              656      40379    0.2    0.1     0.4    0.3
+           unwrapFull                          Lib                       src/Lib.hs:(114,1)-(115,32)                       658     363411    0.0    0.0     0.0    0.0
+           fromList                            BitSet9                   src/BitSet9.hs:56:1-37                            657          0    0.2    0.1     0.2    0.1
+            flipBit                            BitSet9                   src/BitSet9.hs:53:1-49                            660     197532    0.0    0.0     0.0    0.0
+         rows2squares                          Lib                       src/Lib.hs:(133,1)-(137,25)                       618          0    0.5    0.9     0.6    1.1
+          chunksOf                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 619      12120    0.1    0.1     0.1    0.2
+           build                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         620      12120    0.0    0.0     0.0    0.0
+            chunksOf.splitter                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 621      48480    0.0    0.0     0.0    0.0
+           chunksOf.splitter                   Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 665          0    0.0    0.0     0.0    0.0
+         squares2rows                          Lib                       src/Lib.hs:(140,1)-(144,25)                       613          0    0.3    0.4     0.6    0.8
+          chunksOf                             Data.List.Split.Internals src/Data/List/Split/Internals.hs:(514,1)-(517,49) 614      30300    0.1    0.3     0.3    0.4
+           build                               Data.List.Split.Internals src/Data/List/Split/Internals.hs:499:1-18         615      30300    0.0    0.0     0.2    0.1
+            chunksOf.splitter                  Data.List.Split.Internals src/Data/List/Split/Internals.hs:(516,3)-(517,49) 616     121200    0.2    0.1     0.2    0.1
+        onlyChoice                             Lib                       src/Lib.hs:(258,1)-(261,31)                       602          0    0.1    0.4     0.3    0.5
+         onlyChoice.onlyChoice'                Lib                       src/Lib.hs:(259,11)-(261,31)                      710     245430    0.1    0.0     0.2    0.2
+          len                                  BitSet9                   src/BitSet9.hs:(38,1)-(42,51)                     711      55293    0.0    0.0     0.1    0.0
+           len.len'                            BitSet9                   src/BitSet9.hs:(39,11)-(42,51)                    714     401064    0.1    0.0     0.1    0.0
+          toList                               BitSet9                   src/BitSet9.hs:(59,1)-(63,59)                     716      47231    0.0    0.0     0.1    0.2
+           toList.ints                         BitSet9                   src/BitSet9.hs:(60,11)-(63,59)                    717     283436    0.1    0.2     0.1    0.2
+    isSolved                                   Lib                       src/Lib.hs:111:1-27                               719          0    0.1    0.0     0.1    0.0
+     isFull                                    Lib                       src/Lib.hs:(105,1)-(106,26)                       720      81000    0.0    0.0     0.0    0.0
