@@ -74,12 +74,10 @@ showSudoku = intercalate ("\n"
 fromString :: String -> Sudoku
 fromString s = map (\(s, g) -> zip [s..] g)
              $ zip [0,9..]
-             $ map (map readCell . assert9 . rPad9)
+             $ map (map readCell . rPad9 ' ')
+             $ rPad9 ""
              $ lines s
-    where rPad9 = take 9 . (++ (repeat ' '))
-          assert9 l
-              | length l == 9 = l
-              | otherwise     = error $ "length of \"" ++ l ++ "\" is not 9"
+    where rPad9 x = take 9 . (++ (repeat x))
           readCell ' ' = Empty $ Set.fromList [1..9]
           readCell c = Full $ read [c]
 
@@ -163,17 +161,9 @@ disallow = squares2rows
          . rows2cols
          . map disallow' -- on rows
 
-type Clique = ([Index], Allowed) -- (ids, values)
-
--- then Just else Nothing
-(?>) :: Bool -> a -> Maybe a
-True  ?> a = Just a
-False ?> _ = Nothing
-
-tryIntoClique1 :: [(Index, Allowed)] -> Maybe Clique
-tryIntoClique1 ias = isClique1 ?> (is, a)
-    where (is, (a:as)) = unzip ias
-          isClique1 = length is == length a && all (a ==) as
+data CliqueType = Type1 | Type2 | Type3 deriving (Show, Eq)
+type CliqueData = ([Index], Allowed) -- (ids, values)
+data Clique = Clique CliqueType CliqueData deriving Show
 
 safeInit [] = []
 safeInit l  = init l
@@ -182,47 +172,49 @@ safeInit l  = init l
 intersections :: Ord a => [Set.Set a] -> Set.Set a
 intersections = foldl1 Set.intersection
 
--- whole group -> subsequence -> (maybe clique1, maybe clique2)
-tryIntoClique23 :: [(Index, Allowed)] -> [(Index, Allowed)] -> (Maybe Clique, Maybe Clique)
-tryIntoClique23 g ias = let (is, as) = unzip ias;
-                            sharedAs = intersections as;
-                            otherCells = filter ( not
-                                                . (`elem` is)
-                                                . fst
-                                                ) g
-                            otherAs = Set.unions $ map snd otherCells
-                            uniqueAs = sharedAs Set.\\ otherAs
-                        in case length uniqueAs `compare` length is of
-                               LT -> if length uniqueAs == 0
-                                         then (Nothing, Nothing) -- a lot of these
-                                         else (Nothing, Just (is, uniqueAs))
-                               EQ -> (Just (is, uniqueAs), Nothing)
-                               GT -> error "invalid sudoku"
+-- whole group -> subsequence -> ...
+tryIntoClique :: [(Index, Allowed)] -> [(Index, Allowed)] -> Maybe Clique
+tryIntoClique g ias = let (is, as) = unzip ias
+                          
+                          (a':as') = as
+                          isClique1 = length is == length a' && all (a' ==) as'
 
-type Cliques123 = ([Clique], [Clique], [Clique])
+                          sharedAs = intersections as
+                          otherCells = filter ( not
+                                              . (`elem` is)
+                                              . fst
+                                              ) g
+                          otherAs = Set.unions $ map snd otherCells
+                          uniqueAs = sharedAs Set.\\ otherAs
+                      in if isClique1
+                             then Just $ Clique Type1 (is, a')
+                             else case length uniqueAs `compare` length is of
+                                      LT -> if length uniqueAs == 0
+                                                then Nothing -- a lot of these
+                                                else Just $ Clique Type3 (is, uniqueAs)
+                                      EQ -> Just $ Clique Type2 (is, uniqueAs)
+                                      GT -> error "invalid sudoku"
 
-cliques' :: Group -> Cliques123
-cliques' g = ( mapMaybe tryIntoClique1 subSeqs
-             , catMaybes maybe2s
-             , catMaybes maybe3s
-             )
+cliques' :: Group -> [Clique]
+cliques' g = mapMaybe (tryIntoClique g')
+         $ safeInit
+         $ tail
+         $ subsequences
+         $ g'
     where g' = mapMaybe unwrapEmpty g
-          subSeqs = safeInit
-                  $ tail
-                  $ subsequences
-                  $ g'
-          (maybe2s, maybe3s) = unzip $ map (tryIntoClique23 g') subSeqs
 
-cliques :: Sudoku -> Cliques123
-cliques = foldl1 (+++)
-        . map cliques'
-    where (a, b, c) +++ (d, e, f) = (a ++ d, b ++ e, c ++ f)
+cliques :: Sudoku -> [Clique]
+cliques s -- maybe nub here somehow
+        = rowCs ++ colCs ++ squareCs
+    where sCs = foldl1 (++) . map cliques'
+          rowCs = sCs s
+          colCs = sCs $ rows2cols s
+          squareCs = sCs $ rows2squares s
 
 -- this function takes up 40% of execution time and 50% of allocation space
 -- check if group contains clique
 contains :: Group -> Clique -> Bool
--- contains g (is, _) = Set.fromList is `Set.isSubsetOf` Set.fromList (map fst g)
-contains g (is, _) = is `isSubsequenceOf` sort (map fst g)
+contains g (Clique _ (is, _)) = is `isSubsequenceOf` (map fst g)
 
 applyAll :: [a -> a] -> a -> a
 applyAll [] x     = x
@@ -230,44 +222,43 @@ applyAll (f:fs) x = applyAll fs (f x)
 
 -- disallow clique values from all other group members
 -- assumes (g `contains` c1)
-disallowClique1' :: Clique -> Group -> Group
-disallowClique1' c1@(is, vs) g = map removeVsIfOther g
+disallowCliqueA :: CliqueData -> Group -> Group
+disallowCliqueA (is, vs) g = map removeVsIfOther g
     where removeVsIfOther (i, Empty as)
               | not $ i `elem` is = (i, Empty (as Set.\\ vs))
           removeVsIfOther c = c
 
 -- disallow all non-clique values from clique members
 -- assumes (g `contains` c2)
-disallowClique2' :: Clique -> Group -> Group
-disallowClique2' c2@(is, vs) g = map removeAsIfMember g
+disallowCliqueB :: CliqueData -> Group -> Group
+disallowCliqueB (is, vs) g = map removeAsIfMember g
     where removeAsIfMember (i, Empty as)
               | i `elem` is = (i, Empty vs)
           removeAsIfMember c = c
 
-disallowCliques'' :: ([Clique], [Clique], [Clique]) -> Group -> Group
-disallowCliques'' (c1s, c2s, c3s) g = applyAll ( map disallowClique1' c1s'
-                                               ++ map disallowClique1' c2s'
-                                               ++ map disallowClique1' c3s'
-                                               ++ map disallowClique2' c2s'
-                                               ) g
-    where flt = filter (g `contains`)
-          c1s' = flt c1s
-          c2s' = flt c2s
-          c3s' = flt c3s
+disallowClique' :: Clique -> Group -> Group
+disallowClique' c@(Clique Type1 cd) = disallowCliqueA cd
+disallowClique' c@(Clique Type2 cd) = disallowCliqueA cd
+                                    . disallowCliqueB cd
+disallowClique' c@(Clique Type3 cd) = disallowCliqueA cd
 
-disallowCliques' :: ([Clique], [Clique], [Clique]) -> Sudoku -> Sudoku
-disallowCliques' = map . disallowCliques''
+disallowCliques' :: [Clique] -> Group -> Group
+disallowCliques' cs g = applyAll (map disallowClique' myCs) g
+    where myCs = filter (g `contains`) cs
 
 disallowCliques :: Sudoku -> Sudoku
-disallowCliques s = sub -- on rows
-                  $ cols2rows
-                  $ sub -- on cols
-                  $ rows2cols
-                  $ squares2rows
-                  $ sub -- on squares
-                  $ rows2squares
-                  $ s
-    where sub = disallowCliques' $ cliques s
+disallowCliques s = if length cs == 0
+                        then s
+                        else sub -- on rows
+                           $ cols2rows
+                           $ sub -- on cols
+                           $ rows2cols
+                           $ squares2rows
+                           $ sub -- on squares
+                           $ rows2squares
+                           $ s
+    where cs = cliques s
+          sub = map $ disallowCliques' cs
 
 -- convert empty cell with one allowed value into full cells
 onlyChoice :: Sudoku -> Sudoku

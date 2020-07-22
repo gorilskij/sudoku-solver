@@ -24,4 +24,18 @@ solvem = solvem' 0
 main :: IO ()
 main = do
     pairs <- pairsFromCSV "sudokus/sudoku.csv"
-    solvem $ take 500 pairs
+    solvem $ take 1000 pairs
+
+    -- s <- fromFile "sudokus/extreme1.txt"
+    -- putStrLn $ showSudoku s
+    -- putStrLn "\n\n\n"
+
+    -- putStrLn $ showSudoku' s
+    -- putStrLn "\n\n\n"
+
+    -- let s' = solve s
+
+    -- putStrLn $ showSudoku' s'
+    -- putStrLn "\n\n\n"
+
+    -- putStrLn $ showSudoku s'
