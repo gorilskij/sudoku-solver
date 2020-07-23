@@ -6,6 +6,7 @@
 module Lib where
 
 import BitSet
+import Data.WideWord (Int128)
 import Data.Maybe
 import Data.List
 import Data.List.Split
@@ -18,6 +19,8 @@ import Combinatorics (partitions)
 type Value = Int
 type Index = Int
 type Allowed = BitSet Int -- stores values 1-9
+-- this might be faster as a list
+type Indices = BitSet Int128 -- stores values 0-80 (Int128 might be faster)
 
 data Cell = Full Value
           | Empty Allowed
@@ -187,7 +190,7 @@ disallow = squares2rows
          . map disallow' -- on rows
 
 data CliqueType = Type1 | Type2 | Type3 deriving (Show, Eq)
-type CliqueData = ([Index], Allowed) -- (ids, values)
+type CliqueData = (Indices, Allowed) -- (ids, values)
 data Clique = Clique { cliqueType :: CliqueType
                      , creationGroup :: GroupId
                      , containingGroups :: [GroupId]
@@ -197,40 +200,42 @@ data Clique = Clique { cliqueType :: CliqueType
 safeInit [] = []
 safeInit l  = init l
 
--- maybe sets here would be faster
-rowIndices = [ (Row 0, [00..08])
-             , (Row 1, [09..17])
-             , (Row 2, [18..26])
-             , (Row 3, [27..35])
-             , (Row 4, [36..44])
-             , (Row 5, [45..53])
-             , (Row 6, [54..62])
-             , (Row 7, [63..71])
-             , (Row 8, [72..80])
+rowIndices :: [(GroupId, Indices)]
+rowIndices = [ (Row 0, fromList [00..08])
+             , (Row 1, fromList [09..17])
+             , (Row 2, fromList [18..26])
+             , (Row 3, fromList [27..35])
+             , (Row 4, fromList [36..44])
+             , (Row 5, fromList [45..53])
+             , (Row 6, fromList [54..62])
+             , (Row 7, fromList [63..71])
+             , (Row 8, fromList [72..80])
              ]
 
-colIndices = [ (Col 0, [0,09..72])
-             , (Col 1, [1,10..73])
-             , (Col 2, [2,11..74])
-             , (Col 3, [3,12..75])
-             , (Col 4, [4,13..76])
-             , (Col 5, [5,14..77])
-             , (Col 6, [6,15..78])
-             , (Col 7, [7,16..79])
-             , (Col 8, [8,17..80])
+colIndices :: [(GroupId, Indices)]
+colIndices = [ (Col 0, fromList [0,09..72])
+             , (Col 1, fromList [1,10..73])
+             , (Col 2, fromList [2,11..74])
+             , (Col 3, fromList [3,12..75])
+             , (Col 4, fromList [4,13..76])
+             , (Col 5, fromList [5,14..77])
+             , (Col 6, fromList [6,15..78])
+             , (Col 7, fromList [7,16..79])
+             , (Col 8, fromList [8,17..80])
              ]
 
-squareIndices = [ (Square 0, [00,01,02, 09,10,11, 18,19,20])
-                , (Square 1, [03,04,05, 12,13,14, 21,22,23])
-                , (Square 2, [06,07,08, 15,16,17, 24,25,26])
+squareIndices :: [(GroupId, Indices)]
+squareIndices = [ (Square 0, fromList [00,01,02, 09,10,11, 18,19,20])
+                , (Square 1, fromList [03,04,05, 12,13,14, 21,22,23])
+                , (Square 2, fromList [06,07,08, 15,16,17, 24,25,26])
+                
+                , (Square 3, fromList [27,28,29, 36,37,38, 45,46,47])
+                , (Square 4, fromList [30,31,32, 39,40,41, 48,49,50])
+                , (Square 5, fromList [33,34,35, 42,43,44, 51,52,53])
 
-                , (Square 3, [27,28,29, 36,37,38, 45,46,47])
-                , (Square 4, [30,31,32, 39,40,41, 48,49,50])
-                , (Square 5, [33,34,35, 42,43,44, 51,52,53])
-
-                , (Square 6, [54,55,56, 63,64,65, 72,73,74])
-                , (Square 7, [57,58,59, 66,67,68, 75,76,77])
-                , (Square 8, [60,61,62, 69,70,71, 78,79,80])
+                , (Square 6, fromList [54,55,56, 63,64,65, 72,73,74])
+                , (Square 7, fromList [57,58,59, 66,67,68, 75,76,77])
+                , (Square 8, fromList [60,61,62, 69,70,71, 78,79,80])
                 ]
 
 allEqual :: Eq a => [a] -> Bool
@@ -239,30 +244,35 @@ allEqual (a:a':as)
     | otherwise = False
 allEqual as     = True
 
-getContainingGroups :: [Index] -> [GroupId]
-getContainingGroups is = row ++ col ++ square
-    where isRow = allEqual $ map (`div` 9) is
-          isCol = allEqual $ map (`mod` 9) is
-          isSquare = allEqual (map ((`mod` 3) . (`div` 3)) is) -- same col of squares
-                   && allEqual (map ((`div` 9) . (`div` 3)) is) -- same row of squares
+-- set of indices -> ...
+getContainingGroups :: Indices -> [GroupId]
+getContainingGroups is = find rowIndices ++ find colIndices ++ find squareIndices
+    where find = map fst . take 1 . filter ((is `isSubsetOf`) . snd)
+ 
+-- getContainingGroups is = row ++ col ++ square
+    -- where isRow = allEqual $ map (`div` 9) is
+    --       isCol = allEqual $ map (`mod` 9) is
+    --       isSquare = allEqual (map ((`mod` 3) . (`div` 3)) is) -- same col of squares
+    --                && allEqual (map ((`div` 9) . (`div` 3)) is) -- same row of squares
 
-          find = map fst . take 1 . filter ((is `isSubsequenceOf`) . snd)
-          row = if isRow
-                    then find rowIndices
-                    else []
-          col = if isCol
-                    then find colIndices
-                    else []
-          square = if isSquare
-                       then find squareIndices
-                       else []
+    --       find = map fst . take 1 . filter ((is `isSubsetOf`) . snd)
+    --       row = if isRow
+    --                 then find rowIndices
+    --                 else []
+    --       col = if isCol
+    --                 then find colIndices
+    --                 else []
+    --       square = if isSquare
+    --                    then find squareIndices
+    --                    else []
 
 type BareEmptyICell = (Index, Allowed)
 
 -- _ -> (subsequence, otherAs) -> ...
 tryIntoClique :: GroupId -> ([BareEmptyICell], [BareEmptyICell]) -> Maybe Clique
 tryIntoClique gId (ias, otherIAs) = let (is, as) = unzip ias
-                                        cGs = delete gId $ getContainingGroups is
+                                        is' = fromList is
+                                        cGs = delete gId $ getContainingGroups is'
                                     
                                         (a':as') = as
                                         isClique1 = length is == len a' && all (a' ==) as'
@@ -271,12 +281,12 @@ tryIntoClique gId (ias, otherIAs) = let (is, as) = unzip ias
                                         otherAs = unions $ map snd otherIAs
                                         uniqueAs = sharedAs \\\ otherAs
                                     in if isClique1
-                                           then Just $ Clique Type1 gId cGs (is, a')
+                                           then Just $ Clique Type1 gId cGs (is', a')
                                            else case len uniqueAs `compare` length is of
                                                     LT -> if len uniqueAs == 0
                                                               then Nothing -- a lot of these
-                                                              else Just $ Clique Type3 gId cGs (is, uniqueAs)
-                                                    EQ -> Just $ Clique Type2 gId cGs (is, uniqueAs)
+                                                              else Just $ Clique Type3 gId cGs (is', uniqueAs)
+                                                    EQ -> Just $ Clique Type2 gId cGs (is', uniqueAs)
                                                     GT -> error $ "invalid sudoku, uniqueAs = " ++ show uniqueAs ++ ", is = " ++ show is ++ ", gId = " ++ show gId
 
 cliques' :: Group -> [Clique]
@@ -314,7 +324,7 @@ applyAll (f:fs) x = applyAll fs (f x)
 disallowCliqueA :: CliqueData -> [ICell] -> [ICell]
 disallowCliqueA (is, vs) g = map removeVsIfOther g
     where removeVsIfOther (i, Empty as)
-              | not $ i `elem` is = (i, Empty (as \\\ vs))
+              | not $ i `member` is = (i, Empty (as \\\ vs))
           removeVsIfOther c = c
 
 -- disallow all non-clique values from clique members
@@ -322,7 +332,7 @@ disallowCliqueA (is, vs) g = map removeVsIfOther g
 disallowCliqueB :: CliqueData -> [ICell] -> [ICell]
 disallowCliqueB (is, vs) g = map removeAsIfMember g
     where removeAsIfMember (i, Empty as)
-              | i `elem` is = (i, Empty vs)
+              | i `member` is = (i, Empty vs)
           removeAsIfMember c = c
 
 

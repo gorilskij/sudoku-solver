@@ -24,6 +24,7 @@ dependencies:
 - split >= 0.2.3
 # - containers >= 0.6.2
 - combinatorial >= 0.1.0
+- wide-word >= 0.1.1
 
 library:
   source-dirs: src
