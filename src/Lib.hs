@@ -13,6 +13,7 @@ import Data.Function
 import Control.Monad
 import Data.Char
 import Debug.Trace
+import Combinatorics (partitions)
 
 type Value = Int
 type Index = Int
@@ -196,6 +197,7 @@ data Clique = Clique { cliqueType :: CliqueType
 safeInit [] = []
 safeInit l  = init l
 
+-- maybe sets here would be faster
 rowIndices = [ (Row 0, [00..08])
              , (Row 1, [09..17])
              , (Row 2, [18..26])
@@ -241,7 +243,8 @@ getContainingGroups :: [Index] -> [GroupId]
 getContainingGroups is = row ++ col ++ square
     where isRow = allEqual $ map (`div` 9) is
           isCol = allEqual $ map (`mod` 9) is
-          isSquare = True -- unimplemented
+          isSquare = allEqual (map ((`mod` 3) . (`div` 3)) is) -- same col of squares
+                   && allEqual (map ((`div` 9) . (`div` 3)) is) -- same row of squares
 
           find = map fst . take 1 . filter ((is `isSubsequenceOf`) . snd)
           row = if isRow
@@ -254,37 +257,35 @@ getContainingGroups is = row ++ col ++ square
                        then find squareIndices
                        else []
 
--- _ -> whole group -> subsequence -> ...
-tryIntoClique :: GroupId -> [(Index, Allowed)] -> [(Index, Allowed)] -> Maybe Clique
-tryIntoClique gId g ias = let (is, as) = unzip ias
-                              cGs = delete gId $ getContainingGroups is
-                          
-                              (a':as') = as
-                              isClique1 = length is == len a' && all (a' ==) as'
+type BareEmptyICell = (Index, Allowed)
 
-                              sharedAs = intersections as
-                              otherCells = filter ( not
-                                                  . (`elem` is)
-                                                  . fst
-                                                  ) g
-                              otherAs = unions $ map snd otherCells
-                              uniqueAs = sharedAs \\\ otherAs
-                          in if isClique1
-                                 then Just $ Clique Type1 gId cGs (is, a')
-                                 else case len uniqueAs `compare` length is of
-                                          LT -> if len uniqueAs == 0
-                                                    then Nothing -- a lot of these
-                                                    else Just $ Clique Type3 gId cGs (is, uniqueAs)
-                                          EQ -> Just $ Clique Type2 gId cGs (is, uniqueAs)
-                                          GT -> error $ "invalid sudoku, uniqueAs = " ++ show uniqueAs ++ ", is = " ++ show is ++ ", gId = " ++ show gId
+-- _ -> (subsequence, otherAs) -> ...
+tryIntoClique :: GroupId -> ([BareEmptyICell], [BareEmptyICell]) -> Maybe Clique
+tryIntoClique gId (ias, otherIAs) = let (is, as) = unzip ias
+                                        cGs = delete gId $ getContainingGroups is
+                                    
+                                        (a':as') = as
+                                        isClique1 = length is == len a' && all (a' ==) as'
+     
+                                        sharedAs = intersections as
+                                        otherAs = unions $ map snd otherIAs
+                                        uniqueAs = sharedAs \\\ otherAs
+                                    in if isClique1
+                                           then Just $ Clique Type1 gId cGs (is, a')
+                                           else case len uniqueAs `compare` length is of
+                                                    LT -> if len uniqueAs == 0
+                                                              then Nothing -- a lot of these
+                                                              else Just $ Clique Type3 gId cGs (is, uniqueAs)
+                                                    EQ -> Just $ Clique Type2 gId cGs (is, uniqueAs)
+                                                    GT -> error $ "invalid sudoku, uniqueAs = " ++ show uniqueAs ++ ", is = " ++ show is ++ ", gId = " ++ show gId
 
 cliques' :: Group -> [Clique]
-cliques' (gId, g) = mapMaybe (tryIntoClique gId g')
-                  $ safeInit
+cliques' (gId, g) = mapMaybe (tryIntoClique gId)
+                  $ safeInit -- do we even need single element cliques?
                   $ tail
-                  $ subsequences
-                  $ g'
-    where g' = mapMaybe unwrapEmpty g
+                  $ partitions
+                  $ mapMaybe unwrapEmpty
+                  $ g
 
 cliques :: Sudoku -> [Clique]
 cliques s -- maybe nub here somehow

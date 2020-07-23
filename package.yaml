@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - split >= 0.2.3
 # - containers >= 0.6.2
+- combinatorial >= 0.1.0
 
 library:
   source-dirs: src

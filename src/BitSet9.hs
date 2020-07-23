@@ -4,7 +4,6 @@ module BitSet9 ( BitSet9()
                , full
                , len
                , fromList
-               , fromNubList
                , toList
                , member
                , (#>)
@@ -57,11 +56,12 @@ flipBit :: Int -> BitSet9 -> BitSet9
 flipBit n (BitSet9 bs) = BitSet9 $ bitAt n `xor` bs
 
 fromList :: [Int] -> BitSet9
-fromList = fromNubList . nub
-
--- assumes input list is nub
-fromNubList :: [Int] -> BitSet9
-fromNubList = foldl (flip flipBit) empty
+fromList = foldl (flip flipBit) empty
+         . map assertInRange
+         . nub
+    where assertInRange n
+              | n >= 1 && n <= 9 = n
+              | otherwise        = error $ show n ++ " not in range [1,9]"
 
 toList :: BitSet9 -> [Int]
 toList (BitSet9 bs) = ints 0 bs
