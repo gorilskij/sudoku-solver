@@ -2,6 +2,7 @@
 
 	   sudoku-exe +RTS -N -p -RTS
 
+  (not merging yet, master is still faster)
 	total time  =        0.79 secs   (2698 ticks @ 1000 us, 12 processors)
 	total alloc = 4,658,317,104 bytes  (excludes profiling overheads)
 
