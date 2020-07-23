@@ -5,7 +5,7 @@
 --        ) where
 module Lib where
 
-import BitSet9
+import BitSet
 import Data.Maybe
 import Data.List
 import Data.List.Split
@@ -17,7 +17,7 @@ import Combinatorics (partitions)
 
 type Value = Int
 type Index = Int
-type Allowed = BitSet9
+type Allowed = BitSet Int -- stores values 1-9
 
 data Cell = Full Value
           | Empty Allowed
@@ -86,7 +86,7 @@ fromString s = map (\(i, g) -> (Row i, zip [i * 9 ..] g))
              $ rPad9 ""
              $ lines s
     where rPad9 x = take 9 . (++ (repeat x))
-          readCell ' ' = Empty full
+          readCell ' ' = Empty $ fromList [1..9]
           readCell c = Full $ read [c]
 
 fromFile :: FilePath -> IO Sudoku
