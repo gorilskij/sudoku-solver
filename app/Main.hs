@@ -24,4 +24,4 @@ solvem = solvem' 0
 main :: IO ()
 main = do
     pairs <- pairsFromCSV "sudokus/sudoku.csv"
-    solvem $ take 500 pairs
+    solvem $ take 1000 pairs
