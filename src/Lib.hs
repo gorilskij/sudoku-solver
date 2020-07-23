@@ -90,7 +90,7 @@ fromString s = map (\(i, g) -> (Row i, zip [i * 9 ..] g))
              $ lines s
     where rPad9 x = take 9 . (++ (repeat x))
           readCell ' ' = Empty $ fromList [1..9]
-          readCell c = Full $ read [c]
+          readCell c   = Full $ digitToInt c
 
 fromFile :: FilePath -> IO Sudoku
 fromFile = (fromString <$>) . readFile
@@ -244,36 +244,23 @@ allEqual (a:a':as)
     | otherwise = False
 allEqual as     = True
 
--- set of indices -> ...
-getContainingGroups :: Indices -> [GroupId]
-getContainingGroups is = find rowIndices ++ find colIndices ++ find squareIndices
+-- type (rows, cols, squares) to ignore -> set of indices -> ...
+containingGroupsExcept :: GroupId -> Indices -> [GroupId]
+containingGroupsExcept g is = find $ setsExcept g
     where find = map fst . take 1 . filter ((is `isSubsetOf`) . snd)
- 
--- getContainingGroups is = row ++ col ++ square
-    -- where isRow = allEqual $ map (`div` 9) is
-    --       isCol = allEqual $ map (`mod` 9) is
-    --       isSquare = allEqual (map ((`mod` 3) . (`div` 3)) is) -- same col of squares
-    --                && allEqual (map ((`div` 9) . (`div` 3)) is) -- same row of squares
-
-    --       find = map fst . take 1 . filter ((is `isSubsetOf`) . snd)
-    --       row = if isRow
-    --                 then find rowIndices
-    --                 else []
-    --       col = if isCol
-    --                 then find colIndices
-    --                 else []
-    --       square = if isSquare
-    --                    then find squareIndices
-    --                    else []
+          setsExcept :: GroupId -> [(GroupId, Indices)]
+          setsExcept (Row _) = colIndices ++ squareIndices
+          setsExcept (Col _) = rowIndices ++ squareIndices
+          setsExcept (Square _) = rowIndices ++ colIndices
 
 type BareEmptyICell = (Index, Allowed)
 
--- _ -> (subsequence, otherAs) -> ...
+-- _ -> (other group members, potential clique) -> ...
 tryIntoClique :: GroupId -> ([BareEmptyICell], [BareEmptyICell]) -> Maybe Clique
-tryIntoClique gId (ias, otherIAs) = let (is, as) = unzip ias
+tryIntoClique gId (otherIAs, ias) = let (is, as) = unzip ias
                                         is' = fromList is
-                                        cGs = delete gId $ getContainingGroups is'
-                                    
+                                        cGs = containingGroupsExcept gId is'
+
                                         (a':as') = as
                                         isClique1 = length is == len a' && all (a' ==) as'
      
@@ -287,20 +274,21 @@ tryIntoClique gId (ias, otherIAs) = let (is, as) = unzip ias
                                                               then Nothing -- a lot of these
                                                               else Just $ Clique Type3 gId cGs (is', uniqueAs)
                                                     EQ -> Just $ Clique Type2 gId cGs (is', uniqueAs)
-                                                    GT -> error $ "invalid sudoku, uniqueAs = " ++ show uniqueAs ++ ", is = " ++ show is ++ ", gId = " ++ show gId
+                                                    GT -> error $ "invalid sudoku"
 
 cliques' :: Group -> [Clique]
 cliques' (gId, g) = mapMaybe (tryIntoClique gId)
                   $ safeInit -- do we even need single element cliques?
-                  $ tail
-                  $ partitions
+                --   $ tail
+                  $ dropWhile ((< 2) . length . snd) -- without single element cliques
+                  $ partitions -- [(others, subsequence)]
                   $ mapMaybe unwrapEmpty
                   $ g
 
 cliques :: Sudoku -> [Clique]
 cliques s -- maybe nub here somehow
         = rowCs ++ colCs ++ squareCs
-    where sCs = foldl1 (++) . map cliques'
+    where sCs = foldl' (++) [] . map cliques'
           rowCs = sCs s
           colCs = sCs $ rows2cols s
           squareCs = sCs $ rows2squares s

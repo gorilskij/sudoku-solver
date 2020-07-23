@@ -47,7 +47,7 @@ member n (BitSet bs) = let pos = bit n in pos .&. bs == pos
 
 fromList :: Bits a => [Int] -> BitSet a
 fromList = BitSet
-         . foldl setBit zeroBits
+         . foldl' setBit zeroBits
 
 toList :: Bits a => BitSet a -> [Int]
 toList (BitSet bs) = ints 0 bs
@@ -78,7 +78,7 @@ infixl 3 /\
 bs1 /\ bs2 = (.&.) <$> bs1 <*> bs2
 
 unions :: Bits a => [BitSet a] -> BitSet a
-unions = foldl (\/) empty
+unions = foldl' (\/) empty
 
 intersections :: Bits a => [BitSet a] -> BitSet a
 intersections = foldl1 (/\)
