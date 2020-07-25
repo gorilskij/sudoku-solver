@@ -30,21 +30,27 @@ solveOne p = do
 
 
 --
-solvePairs'' i pss
-    | i `mod` 100 == 0 = trace ("iteration " ++ show i) (solvePairs' i pss)
-    | otherwise        = solvePairs' i pss
+solvePairs''' i pss
+    | i `mod` 100 == 0 = trace ("iteration " ++ show i) (solvePairs'' i pss)
+    | otherwise        = solvePairs'' i pss
 
-solvePairs' :: Int -> [(Sudoku, Sudoku)] -> IO ()
-solvePairs' _ [] = return ()
-solvePairs' i ((p, s):pss) = do
+solvePairs'' :: Int -> [(Sudoku, Sudoku)] -> IO ()
+solvePairs'' _ [] = return ()
+solvePairs'' i ((p, s):pss) = do
     let solved = solve p
     if isSolved solved
         then if solved == s
-                 then solvePairs'' (i + 1) pss
+                 then solvePairs''' (i + 1) pss
                  else error $ "solved but not equal at index " ++ show i
         else error $ "failed to solve at index " ++ show i
 
-solvePairs = solvePairs' 0
+solvePairs' = solvePairs'' 0
+
+solvePairs :: String -> IO ()
+solvePairs f = do
+    pairs <- pairsFromCSV f
+    solvePairs' $ take 1000
+                $ pairs
 --
 
 
@@ -77,12 +83,6 @@ solveFolder f = do
 
 main :: IO ()
 main = do
-    solveFolder "sudokus/hardest"
-
-
-    -- pairs <- pairsFromCSV "sudokus/sudoku.csv"
-    -- solvem
-    --     $ take 1000
-    --     $ pairs
-
-    -- solveOne "sudokus/hardest1.txt"
+    -- solveOne "sudokus/test4.txt"
+    solvePairs "sudokus/sudoku.csv"
+    -- solveFolder "sudokus/hardest"
