@@ -2,9 +2,11 @@ module Clique (cliques, disallowCliques) where
 
 import LibBase
 import BitSet
-import Data.Maybe (mapMaybe)
-import Combinatorics (partitions)
+
+import Data.Maybe (mapMaybe, catMaybes)
 import Data.List (foldl')
+import Control.Applicative (liftA2)
+import Combinatorics (partitions)
 
 data CliqueType = Type1 | Type2 | Type3 deriving (Show, Eq)
 type CliqueData = (Indices, Allowed) -- (ids, values)
@@ -53,6 +55,7 @@ squareIndices = [ (Square 0, fromList [00,01,02, 09,10,11, 18,19,20])
                 ]
 
 -- type (rows, cols, squares) to ignore -> set of indices -> ...
+{-# INLINE containingGroupsExcept #-}
 containingGroupsExcept :: GroupId -> Indices -> [GroupId]
 containingGroupsExcept g is = find $ setsExcept g
     where find = map fst . take 1 . filter ((is `isSubsetOf`) . snd)
@@ -65,7 +68,8 @@ containingGroupsExcept g is = find $ setsExcept g
 type BareEmptyICell = (Index, Allowed)
 
 -- _ -> (other group members, potential clique) -> ...
-tryIntoClique :: GroupId -> ([BareEmptyICell], [BareEmptyICell]) -> Maybe Clique
+{-# INLINE tryIntoClique #-}
+tryIntoClique :: GroupId -> ([BareEmptyICell], [BareEmptyICell]) -> MaybeFeasible (Maybe Clique)
 tryIntoClique gId (otherIAs, ias) = let (is, as) = unzip ias
                                         is' = fromList is
                                         cGs = containingGroupsExcept gId is'
@@ -77,19 +81,22 @@ tryIntoClique gId (otherIAs, ias) = let (is, as) = unzip ias
                                         otherAs = unions $ map snd otherIAs
                                         uniqueAs = sharedAs \\\ otherAs
                                     in if isClique1
-                                           then Just $ Clique Type1 gId cGs (is', a')
+                                           then Feasible $ Just $ Clique Type1 gId cGs (is', a')
                                            else case len uniqueAs `compare` length is of
                                                     LT -> if len uniqueAs == 0
-                                                              then Nothing -- a lot of these
-                                                              else Just $ Clique Type3 gId cGs (is', uniqueAs)
-                                                    EQ -> Just $ Clique Type2 gId cGs (is', uniqueAs)
-                                                    GT -> error $ "invalid sudoku"
+                                                              then Feasible $ Nothing -- a lot of these
+                                                              else Feasible $ Just $ Clique Type3 gId cGs (is', uniqueAs)
+                                                    EQ -> Feasible $ Just $ Clique Type2 gId cGs (is', uniqueAs)
+                                                    GT -> Infeasible -- means the sudoku is unsolvable in this state
 
 safeInit [] = []
 safeInit l  = init l
 
-cliques' :: Group -> [Clique]
-cliques' (gId, g) = mapMaybe (tryIntoClique gId)
+{-# INLINE cliques' #-}
+cliques' :: Group -> MaybeFeasible [Clique]
+cliques' (gId, g) = fmap catMaybes
+                  $ sequence -- for feasibility
+                  $ map (tryIntoClique gId)
                   $ safeInit -- ignore full group clique
                   -- could be useful to ignore "number of free cells in the group"-sized cliques
                   -- consider also removing cliques where the size == the number of empty cells in the group
@@ -99,13 +106,14 @@ cliques' (gId, g) = mapMaybe (tryIntoClique gId)
                   $ mapMaybe unwrapEmpty
                   $ g
 
-cliques :: Sudoku -> [Clique]
+cliques :: Sudoku -> MaybeFeasible [Clique]
 cliques s -- maybe nub here somehow
-        = rowCs ++ colCs ++ squareCs
-    where sCs = foldl' (++) [] . map cliques'
+        = rowCs +++ colCs +++ squareCs
+    where sCs = (fmap concat) . sequence . map cliques'
           rowCs = sCs s
           colCs = sCs $ rows2cols s
           squareCs = sCs $ rows2squares s
+          (+++) = liftA2 (++)
 
 -- check if group contains clique
 contains :: Group -> Clique -> Bool
@@ -122,6 +130,7 @@ applyAll (f:fs) x = applyAll fs (f x)
 
 -- disallow clique values from all other group members
 -- assumes (g `contains` c1)
+{-# INLINE disallowCliqueA #-}
 disallowCliqueA :: CliqueData -> [ICell] -> [ICell]
 disallowCliqueA (is, vs) g = map removeVsIfOther g
     where removeVsIfOther (i, Empty as)
@@ -130,14 +139,15 @@ disallowCliqueA (is, vs) g = map removeVsIfOther g
 
 -- disallow all non-clique values from clique members
 -- assumes (g `contains` c2)
+{-# INLINE disallowCliqueB #-}
 disallowCliqueB :: CliqueData -> [ICell] -> [ICell]
 disallowCliqueB (is, vs) g = map removeAsIfMember g
     where removeAsIfMember (i, Empty as)
               | i `member` is = (i, Empty vs)
           removeAsIfMember c = c
 
-
 -- do we need disallow at all?
+{-# INLINE disallowClique' #-}
 disallowClique' :: Clique -> Group -> Group
 disallowClique' Clique{cliqueType=Type1, cliqueData=cd} (gId, g) = (gId, disallowCliqueA cd g)
 
@@ -149,21 +159,22 @@ disallowClique' Clique{cliqueType=Type3, creationGroup=cId, cliqueData=cd} gr@(g
     | cId == gId = gr
     | otherwise  = (gId, disallowCliqueA cd g)
 
-
+{-# INLINE disallowCliques' #-}
 disallowCliques' :: [Clique] -> Group -> Group
 disallowCliques' cs g = applyAll (map disallowClique' myCs) g
     where myCs = filter (g `contains`) cs
 
-disallowCliques :: Sudoku -> Sudoku
-disallowCliques s = if length cs == 0
-                        then s
-                        else sub -- on rows
-                           $ cols2rows
-                           $ sub -- on cols
-                           $ rows2cols
-                           $ squares2rows
-                           $ sub -- on squares
-                           $ rows2squares
-                           $ s
-    where cs = cliques s
-          sub = map $ disallowCliques' cs
+disallowCliques :: Sudoku -> MaybeFeasible Sudoku
+disallowCliques s = case cliques s of
+                        Infeasible -> Infeasible
+                        Feasible cs
+                            | length cs == 0 -> Feasible s
+                            | otherwise      -> pure
+                                              $ map (disallowCliques' cs) -- rows
+                                              $ cols2rows
+                                              $ map (disallowCliques' cs) -- cols
+                                              $ rows2cols
+                                              $ squares2rows
+                                              $ map (disallowCliques' cs) -- squares
+                                              $ rows2squares
+                                              $ s

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e6e7ab68774009a4b889541392fc17546111089bc42377ca0c0212d54015ce15
+-- hash: 0aabb86b40933664849c85f70672048bf42f5aa44e10d55133058935e6fdd1cb
 
 name:           sudoku
 version:        0.1.0.0
@@ -31,6 +31,7 @@ library
       Clique
       Lib
       LibBase
+      Search
       Visual
   other-modules:
       Paths_sudoku

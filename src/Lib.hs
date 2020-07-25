@@ -13,12 +13,16 @@ module Lib ( Sudoku
 import LibBase
 import Visual
 import Clique
-
+import Search
 import BitSet
+
 import Data.Char (digitToInt, isDigit)
 import Data.List (intercalate)
 import Data.List.Split (splitOn, chunksOf)
-import Data.Maybe (mapMaybe)
+import Data.Maybe (mapMaybe, fromJust)
+import Control.Monad ((<=<))
+
+import Debug.Trace
 
 removeAll :: Eq a => [a] -> [a] -> [a]
 removeAll _ []    = []
@@ -43,7 +47,7 @@ fromString s = map (\(i, g) -> (Row i, zip [i * 9 ..] g))
              $ filter (not . (0 ==) . length)
              $ lines
              $ replace '.' ' '
-             $ removeAll ['|', '-']
+             $ removeAll ['-', '|']
              $ s
     where rPad9 x = take 9 . (++ (repeat x))
           readCell ' ' = Empty $ fromList [1..9]
@@ -70,9 +74,6 @@ pairsFromCSV = ( map toPair
               | otherwise = z : replace x y zs
 
 
-mapSnd :: (b -> c) -> (a, b) -> (a, c)
-mapSnd f (x, y) = (x, f y)
-
 disallow' :: Group -> Group
 disallow' g = mapSnd (map (mapEmpty (\\\ disallowed))) g
     where disallowed = fromList
@@ -98,13 +99,26 @@ onlyChoice = map $ mapSnd $ map onlyChoice'
           onlyChoice' c     = c
 
 
-solvingRound :: Sudoku -> Sudoku
-solvingRound = onlyChoice . disallowCliques . disallow
+solvingRound :: Sudoku -> MaybeFeasible Sudoku
+solvingRound = fmap onlyChoice . disallowCliques . disallow
 
 -- solve deterministically, no search
-solveDet :: Sudoku -> Sudoku
-solveDet s = let iters = iterate solvingRound s
-             in fst $ head $ dropWhile (uncurry (/=)) $ zip iters $ tail iters
+solveDet :: Sudoku -> MaybeFeasible Sudoku
+solveDet s = if pure s == s'
+                 then s'
+                 else s' >>= solveDet
+    where s' = solvingRound s
 
-solve :: Sudoku -> Sudoku
-solve = solveDet
+-- tracingSolveDet = (\x -> trace ("After:\n" ++ showSudoku' x ++ "\n\n") x)
+--                 . solveDet
+--                 . (\x -> trace ("Before:\n" ++ showSudoku' x ++ "\n\n") x)
+
+tracingSolveDet :: Sudoku -> MaybeFeasible Sudoku
+tracingSolveDet = (\x -> trace (showMF x ++ "\n\n\n") x)
+                . solveDet
+                . (\x -> trace (showSudoku x ++ "\n") x)
+    where showMF Infeasible   = "Infeasible"
+          showMF (Feasible x) = showSudoku x
+
+solve :: Sudoku -> MaybeFeasible Sudoku
+solve = sudokuDFS solveDet <=< solveDet
