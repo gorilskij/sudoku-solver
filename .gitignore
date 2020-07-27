@@ -1,6 +1,6 @@
+/.vscode
 /.stack-work
 .DS_Store
 
 # heavy
 /sudokus/sudoku.csv
-
