@@ -134,31 +134,7 @@ solveFolder f = do
 
 main :: IO ()
 main = do
+    -- solveOne "sudokus/test3.txt"
     timeFolder "sudokus/hardest"
-    -- solveOne "sudokus/hardest/hardest1.txt"
-    -- solveOne "sudokus/hardest/hardest2.txt" -- quite slow
-    -- solveOne "sudokus/hardest/hardest3.txt"
-    -- solveOne "sudokus/hardest/hardest4.txt"
-    -- solveOne "sudokus/hardest/hardest5.txt"
-    -- solveOne "sudokus/hardest/hardest6.txt"
-    -- solveOne "sudokus/hardest/hardest7.txt"
-    -- solveOne "sudokus/hardest/hardest8.txt"
-    -- solveOne "sudokus/hardest/hardest9.txt"
-    -- solveOne "sudokus/hardest/hardest10.txt"
-    -- solveOne "sudokus/hardest/hardest11.txt"
-    -- solveOne "sudokus/hardest/hardest12.txt" -- very slow
-    -- solveOne "sudokus/hardest/hardest13.txt"
-    -- solveOne "sudokus/hardest/hardest14.txt"
-    -- solveOne "sudokus/hardest/hardest15.txt"
-    -- solveOne "sudokus/hardest/hardest16.txt"
-    -- solveOne "sudokus/hardest/hardest17.txt"
-    -- solveOne "sudokus/hardest/hardest18.txt"
-    -- solveOne "sudokus/hardest/hardest19.txt"
-    -- solveOne "sudokus/hardest/hardest20.txt"
-    -- solveOne "sudokus/hardest/hardest21.txt"
-    -- solveOne "sudokus/hardest/hardest22.txt"
-    -- solveOne "sudokus/hardest/hardest23.txt"
-    -- solveOne "sudokus/hardest/hardest24.txt"
-    -- solveOne "sudokus/hardest/hardest25.txt"
     -- solvePairs "sudokus/sudoku.csv"
     -- solveFolder "sudokus/hardest"

@@ -38,8 +38,8 @@ orElse m       = const m
 
 
 removeBadAssumptions'' :: [Assumption] -> ICell -> ICell
-removeBadAssumptions'' [] c      = c
-removeBadAssumptions'' _ c@(_, Full _)     = c
+removeBadAssumptions'' [] c            = c
+removeBadAssumptions'' _ c@(_, Full _) = c
 removeBadAssumptions'' ((i, v):as) c@(j, Empty vs)
     | i == j    = removeBadAssumptions'' as (i, Empty (v #< vs))
     | otherwise = removeBadAssumptions'' as c
@@ -58,13 +58,13 @@ sudokuDFS solveDet sudoku
     | isSolved sudoku = pure sudoku
     | otherwise       = asum (map (sudokuDFS solveDet) goodSudoku')
     where
-          nextSteps = map (mapSnd solveDet) $ possibleNextSteps sudoku
-          -- acc -> acc -> ...
-          splitBadAssumptions :: [Assumption] -> [Sudoku] -> [(Assumption, MaybeFeasible Sudoku)] -> ([Assumption], [Sudoku])
-          splitBadAssumptions as ss []               = (as, ss)
-          splitBadAssumptions as ss ((a, maybeS):xs) =
-              case maybeS of
-                  Infeasible -> splitBadAssumptions (a : as) ss xs
-                  Feasible s -> splitBadAssumptions as (s : ss) xs
-          (badAssumptions, goodSudoku) = splitBadAssumptions [] [] nextSteps
-          goodSudoku' = map (removeBadAssumptions badAssumptions) goodSudoku
+        nextSteps = map (mapSnd solveDet) $ possibleNextSteps sudoku
+        -- acc -> acc -> ...
+        splitBadAssumptions :: [Assumption] -> [Sudoku] -> [(Assumption, MaybeFeasible Sudoku)] -> ([Assumption], [Sudoku])
+        splitBadAssumptions as ss []               = (as, ss)
+        splitBadAssumptions as ss ((a, maybeS):xs) =
+            case maybeS of
+                Infeasible -> splitBadAssumptions (a : as) ss xs
+                Feasible s -> splitBadAssumptions as (s : ss) xs
+        (badAssumptions, goodSudoku) = splitBadAssumptions [] [] nextSteps
+        goodSudoku' = map (removeBadAssumptions badAssumptions) goodSudoku

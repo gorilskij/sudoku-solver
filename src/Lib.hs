@@ -100,7 +100,11 @@ onlyChoice = map $ mapSnd $ map onlyChoice'
 
 
 solvingRound :: Sudoku -> MaybeFeasible Sudoku
-solvingRound = fmap onlyChoice . disallowCliques . disallow
+solvingRound = fmap onlyChoice
+             . disallowCliques
+             . disallow
+             . onlyChoice
+             -- the last one is for the bad assumption mechanism in Search
 
 -- solve deterministically, no search
 solveDet :: Sudoku -> MaybeFeasible Sudoku
@@ -108,6 +112,10 @@ solveDet s = if pure s == s'
                  then s'
                  else s' >>= solveDet
     where s' = solvingRound s
+
+-- makes some faster, some slower, overall more uneven
+-- solveDet :: Sudoku -> MaybeFeasible Sudoku
+-- solveDet s = solvingRound =<< solvingRound s
 
 -- tracingSolveDet = (\x -> trace ("After:\n" ++ showSudoku' x ++ "\n\n") x)
 --                 . solveDet
@@ -120,5 +128,9 @@ tracingSolveDet = (\x -> trace (showMF x ++ "\n\n\n") x)
     where showMF Infeasible   = "Infeasible"
           showMF (Feasible x) = showSudoku x
 
+-- checkFeasible :: Sudoku -> MaybeFeasible Sudoku
+-- checkFeasible s = undefined
+--     where groupFeasible g = 
+
 solve :: Sudoku -> MaybeFeasible Sudoku
-solve = sudokuDFS solveDet <=< solveDet
+solve = sudokuDFS solveDet <=< solveDet -- <=< checkFeasible

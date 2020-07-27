@@ -108,11 +108,12 @@ cliques' (gId, g) = fmap catMaybes
 
 cliques :: Sudoku -> MaybeFeasible [Clique]
 cliques s -- maybe nub here somehow
-        = rowCs +++ colCs +++ squareCs
-    where sCs = (fmap concat) . sequence . map cliques'
-          rowCs = sCs s
-          colCs = sCs $ rows2cols s
-          squareCs = sCs $ rows2squares s
+          = rowCs +++ colCs +++ squareCs
+    where -- this is now the bottleneck
+          sudokuCliques = (fmap concat) . sequence . map cliques'
+          rowCs = sudokuCliques s
+          colCs = sudokuCliques $ rows2cols s
+          squareCs = sudokuCliques $ rows2squares s
           (+++) = liftA2 (++)
 
 -- check if group contains clique
