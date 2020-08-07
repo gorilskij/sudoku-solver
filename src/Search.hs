@@ -1,8 +1,6 @@
 {-# LANGUAGE TupleSections #-}
 
-module Search 
--- (sudokuDFS) 
-where
+module Search (sudokuDFS) where
 
 import LibBase
 import BitSet

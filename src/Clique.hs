@@ -5,6 +5,7 @@ import BitSet
 
 import Data.Maybe (mapMaybe, catMaybes)
 import Data.List (foldl')
+import Data.Function ((&))
 import Control.Applicative (liftA2)
 import Combinatorics (partitions)
 
@@ -126,8 +127,7 @@ contains (gId, _) Clique{ creationGroup=cId
 -- contains g (Clique _ (is, _)) = fromNubList is `isSubSetOf` fromList (map fst g)
 
 applyAll :: [a -> a] -> a -> a
-applyAll [] x     = x
-applyAll (f:fs) x = applyAll fs (f x)
+applyAll = flip $ foldl' (&)
 
 -- disallow clique values from all other group members
 -- assumes (g `contains` c1)

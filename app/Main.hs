@@ -135,6 +135,6 @@ solveFolder f = do
 main :: IO ()
 main = do
     -- solveOne "sudokus/test3.txt"
-    timeFolder "sudokus/hardest"
-    -- solvePairs "sudokus/sudoku.csv"
+    -- timeFolder "sudokus/hardest"
+    solvePairs "sudokus/sudoku.csv"
     -- solveFolder "sudokus/hardest"
