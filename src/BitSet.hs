@@ -12,7 +12,7 @@ module BitSet ( BitSet ()
                , unions
                , intersections
                , (\\\)
-               , isSubsetOf -- seems to be broken
+               , isSubsetOf
                ) where
 
 import Data.Bits
@@ -32,7 +32,6 @@ instance Applicative BitSet where
 instance Bits a => Show (BitSet a) where
     show bs = "{" ++ (intercalate "," $ map show $ toList bs) ++ "}"
 
--- (min, max) -> ...
 empty :: Bits a => BitSet a
 empty = BitSet zeroBits
 

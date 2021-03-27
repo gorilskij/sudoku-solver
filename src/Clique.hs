@@ -56,7 +56,7 @@ squareIndices = [ (Square 0, fromList [00,01,02, 09,10,11, 18,19,20])
                 ]
 
 -- type (rows, cols, squares) to ignore -> set of indices -> ...
-{-# INLINE containingGroupsExcept #-}
+-- {-# INLINE containingGroupsExcept #-}
 containingGroupsExcept :: GroupId -> Indices -> [GroupId]
 containingGroupsExcept g is = find $ setsExcept g
     where find = map fst . take 1 . filter ((is `isSubsetOf`) . snd)
@@ -69,7 +69,7 @@ containingGroupsExcept g is = find $ setsExcept g
 type BareEmptyICell = (Index, Allowed)
 
 -- _ -> (other group members, potential clique) -> ...
-{-# INLINE tryIntoClique #-}
+-- {-# INLINE tryIntoClique #-}
 tryIntoClique :: GroupId -> ([BareEmptyICell], [BareEmptyICell]) -> MaybeFeasible (Maybe Clique)
 tryIntoClique gId (otherIAs, ias) = let (is, as) = unzip ias
                                         is' = fromList is
@@ -93,7 +93,7 @@ tryIntoClique gId (otherIAs, ias) = let (is, as) = unzip ias
 safeInit [] = []
 safeInit l  = init l
 
-{-# INLINE cliques' #-}
+-- {-# INLINE cliques' #-}
 cliques' :: Group -> MaybeFeasible [Clique]
 cliques' (gId, g) = fmap catMaybes
                   $ sequence -- for feasibility

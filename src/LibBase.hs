@@ -14,7 +14,7 @@ type Value = Int
 type Index = Int
 type Allowed = BitSet Int -- stores values 1-9
 -- this might be faster as a list
-type Indices = BitSet Int128 -- stores values 0-80 (Int128 might be faster)
+type Indices = BitSet Int128 -- stores values 0-80
 
 data Cell = Full Value
           | Empty Allowed
@@ -61,9 +61,7 @@ mapEmpty g (i, Empty as) = (i, Empty (g as))
 mapEmpty _ f             = f
 
 toGroups :: (Int -> GroupId) -> [[ICell]] -> Sudoku
-toGroups = toGroups' 0
-    where toGroups' i f (g:gs) = (f i, g) : toGroups' (i + 1) f gs
-          toGroups' _ _ []     = []
+toGroups f = zip (map f [0..])
 
 fromGroups :: Sudoku -> [[ICell]]
 fromGroups = map snd

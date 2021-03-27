@@ -57,12 +57,12 @@ timeOne p = do
                             then printf "SOLVED in %.3fs" secs
                             else error "IMPOSSIBLE"
 
-timeFolder :: FilePath -> IO ()
-timeFolder f = do
+timeFolder' :: FilePath -> Int -> IO ()
+timeFolder' f n = do
     subs <- getDirectoryContents f
     let subs' = filter (endsWith ".txt") subs
     let subs'' = sortOn fileNum subs'
-    let subs''' = map (f </>) subs''
+    let subs''' = map (f </>) $ if n < 0 then subs'' else take n subs''
     print subs'''
     putStrLn "\n\n"
 
@@ -75,6 +75,9 @@ timeFolder f = do
     printf "\n==\nTOTAL in %.3fs" secs
 
     return ()
+
+timeFolder :: FilePath -> IO()
+timeFolder = flip timeFolder' (-1)
 --
 
 
@@ -135,6 +138,6 @@ solveFolder f = do
 main :: IO ()
 main = do
     -- solveOne "sudokus/test3.txt"
-    timeFolder "sudokus/hardest"
+    timeFolder' "sudokus/hardest" 5
     -- solvePairs "sudokus/sudoku.csv"
     -- solveFolder "sudokus/hardest"
